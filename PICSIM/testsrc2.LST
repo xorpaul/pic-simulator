@@ -1,0 +1,132 @@
+0000 2843           00018           goto main           ;Unterprogramme überspringen
+0001 0000           00019           nop
+0002 0000           00020           nop
+0003 0000           00021           nop  
+0004 1C8B           00025           btfss 0bh,1         ;ist es RB0-Interrupt?
+0005 280A           00026           goto intup1         ;nein
+0006 0A8F           00028           incf 0fh            ;es ist RB0-Interrupt
+0007 120B           00029           bcf 0bh,4           ;INTE löschen
+0008 108B           00030           bcf 0bh,1           ;INTF auch löschen
+0009 0009           00031           retfie  
+000A 1D0B           00033           btfss 0bh,2         ;ist es der Timer-Interrupt?
+000B 2811           00034           goto intup2         ;nein
+000C 110B           00036           bcf 0bh,2           ;T0IF zurücksetzen              
+000D 0A90           00037           incf 10h            ;Interrupts zählen
+000E 30F0           00038           movlw 0f0h          ;neuer Startwert
+000F 0081           00039           movwf 01            ;in TMR0 laden          
+0010 0009           00040           retfie                             
+0011 0009           00042           retfie          
+0012 202F           00046           call up1            ;weiteres Unterprogramm aufrufen
+0013 0A84           00047           incf fsr
+0014 0080           00048           movwf indirect      ;Rückgabewerte sichern
+0015 0008           00049           return              ;fertig  
+0016 3020           00051           movlw 20h           ;Return-Werte hier ablegen
+0017 0084           00052           movwf fsr           ;mittels indirekter Adressierung
+0018 3008           00053           movlw 8
+0019 0080           00054           movwf indirect
+001A 3407           00055           retlw 7    
+001B 2016           00057           call up7
+001C 0A84           00058           incf fsr
+001D 0080           00059           movwf indirect
+001E 3406           00060           retlw 6  
+001F 201B           00062           call up6
+0020 0A84           00063           incf fsr
+0021 0080           00064           movwf indirect
+0022 3405           00065           retlw 5   
+0023 201F           00067           call up5
+0024 0A84           00068           incf fsr
+0025 0080           00069           movwf indirect
+0026 3404           00070           retlw 4    
+0027 2023           00072           call up4
+0028 0A84           00073           incf fsr
+0029 0080           00074           movwf indirect
+002A 3403           00075           retlw 3 
+002B 2027           00077           call up3
+002C 0A84           00078           incf fsr
+002D 0080           00079           movwf indirect
+002E 3402           00080           retlw 2   
+002F 202B           00082           call up2
+0030 0A84           00083           incf fsr
+0031 0080           00084           movwf indirect
+0032 3401           00085           retlw 1         
+0033 3008           00090           movlw 8h           ;Schleifenzähler initialisieren
+0034 008C           00091           movwf count
+0035 3020           00092           movlw 20h           ;Startadresse
+0036 0084           00093           movwf fsr           ;Startzeiger initialsieren
+0037 0100           00094           clrw                ;Summenregister löschen
+0038 0700           00096           addwf indirect,w    ;Speicherinhalt zu W addieren
+0039 0A84           00097           incf fsr
+003A 0B8C           00098           decfsz count
+003B 2838           00099           goto loop2
+003C 008F           00100           movwf 0fh           ;Ergebnis abspeichern
+003D 0D0F           00101           rlf 0fh,w           ;mit 2 multiplizieren
+003E 008E           00102           movwf 0eh           ;speichern
+003F 0C0E           00103           rrf 0eh,w           ;durch 2 teilen
+0040 008D           00104           movwf 0dh           ;speichern
+0041 098F           00105           comf 0fh            ;Komplement bilden
+0042 3400           00106           retlw 0             ;Unterprogrammende    
+0043 303F           00110           movlw 3fh           ;zuerst den Vorteiler vom RTCC trennen
+0044 1683           00111           bsf status,5        ;ins Option-Register schreiben
+0045 0081           00112           movwf 1             ;=freg 81h
+0046 1283           00113           bcf status,5        ;zurück auf Bank0
+0047 0100           00114           clrw                ;RTCC-Register löschen
+0048 0081           00115           movwf 1h
+0049 2012           00116           call upcheck        ;verschachtelte Unterprogramme testen
+004A 2033           00117           call qsumme         ;Quersumme berechnen
+004B 090F           00118           comf 0fh,w          ;Ergebnis holen
+004C 020F           00119           subwf 0fh,w         ;vom Orginalwert abziehen
+004D 008C           00120           movwf 0ch           ;neues Ergebnis abspeichern.
+004E 0198           00123           clrf 18h            ;Zielvariable auf 0 setzen
+004F 3055           00124           movlw 55h           ;Konstante
+0050 0798           00125           addwf 18h           ;nach 18h addieren
+0051 3C05           00126           sublw 5h            ;W=0B0h
+0052 0518           00127           andwf 18h,w         ;W=10h
+0053 0099           00128           movwf 19h           ;
+0054 0399           00129           decf 19h            ;F19=0FH
+0055 0E19           00130           swapf 19h,w         ;W=0F0H
+0056 3AAA           00131           xorlw 0aah          ;W=5AH
+0057 3803           00132           iorlw 3             ;W=5BH
+0058 3E0A           00133           addlw 10            ;W=65H
+0059 390F           00134           andlw 15            ;W=05H
+005A 0698           00135           xorwf 18h           ;F18=50H
+005B 0818           00136           movf 18h,w          ;W=50H
+005C 1D03           00137           btfss status,2      ;
+005D 0A9A           00138           incf 1ah            ;F1A=F1A+1
+005E 019B           00139           clrf 1bh            ;F1B=0
+005F 0A9B           00140           incf 1bh            ;F1B=1
+0060 3001           00141           movlw 1             ;W=1
+0061 029B           00142           subwf 1bh           ;F1B=0
+0062 1803           00143           btfsc status,0
+0063 141F           00144           bsf 1fh,0           ;F1F=1
+0064 029B           00145           subwf 1bh           ;F1B=0FFH
+0065 1C03           00146           btfss status,0
+0066 149F           00147           bsf 1fh,1           ;F1F=3
+0067 3010           00150           movlw 10h             
+0068 1683           00151           bsf status,5        ;auf Bank 1 umschalten
+0069 0085           00152           movwf 5             ;=freg 85H  Port A 0-3 auf Ausgang
+006A 1283           00153           bcf status,5        ;zurück auf Bank 0
+006B 0085           00154           movwf ra            ;Signale auf Low
+006C 1C06           00156           btfss rb,0
+006D 286C           00157           goto main1          ;warten bis RB0 auf 1
+006E 1806           00159           btfsc rb,0
+006F 286E           00160           goto main2          ;warten bis rb0 wieder 0
+0070 108B           00163           bcf 0bh,1           ;INTE löschen
+0071 160B           00164           bsf 0bh,4           ;INTE freigeben
+0072 178B           00165           bsf 0bh,7           ;GIE-Bit setzen
+0073 1A0B           00167           btfsc 0bh,4         ;warte bis INTE auf 0
+0074 2873           00168           goto main3          ;warte auf Interrupt 
+0075 3000           00171           movlw 0             ;Option setzen
+0076 1683           00172           bsf status,5
+0077 0081           00173           movwf 1
+0078 1283           00174           bcf status,5
+0079 168B           00175           bsf 0bh,5           ;TMR0-Interrupt freigeben
+007A 30F0           00176           movlw 240
+007B 0081           00177           movwf 1             ;Timer vorbelegen
+007C 0810           00179           movf 10h,w          ;warte bis 0 in 10h steht
+007D 1D03           00180           btfss status,2      ;Z-Flag abfragen
+007E 287C           00181           goto main4
+007F 3020           00184           movlw 20h           ;Option neu setzen, VT=1:2
+0080 1683           00185           bsf status,5        ;Bank 1
+0081 0081           00186           movwf 1             ;hier liegt Option
+0082 1283           00187           bcf status,5        ;wieder Bank 0   
+0083 2883           00192           goto ende           ;Endlosschleife, verhindert Nirwana      
