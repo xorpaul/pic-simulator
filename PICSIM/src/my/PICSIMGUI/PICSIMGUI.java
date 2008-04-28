@@ -152,6 +152,7 @@ public class PICSIMGUI extends javax.swing.JFrame {
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
+        jTextArea1.setText("0000 2817           00019           goto main           ;Unterprogramme überspringen\n0001 3010           00023           movlw 16            ;Schleifenzähler\n0002 008C           00024           movwf count\n0003 3010           00025           movlw 10h           ;Startzeiger initialisieren\n0004 0084           00026           movwf fsr           ;Zeiger ins FSR\n0005 0100           00027           clrw\n0006 0080           00029           movwf indirect      ;Wert indirekt abspeichern\n0007 0A84           00030           incf fsr            ;Zeiger erhöhen\n0008 3E01           00031           addlw 1             ;W-Register erhöhen (es gibt kein INC W\n0009 0B8C           00032           decfsz count        ;Schleifenzähler erniedrigen\n000A 2806           00033           goto loop1          ;wiederholen bis F08 auf 0 ist\n000B 3400           00034           retlw 0\n000C 3010           00038           movlw 10h           ;Schleifenzähler initialisieren\n000D 008C           00039           movwf count\n000E 0084           00040           movwf fsr           ;Startzeiger initialsieren\n000F 0100           00041           clrw                ;Summenregister löschen\n0010 0700           00043           addwf indirect,w    ;Speicherinhalt zu W addieren\n0011 0A84           00044           incf fsr\n0012 0B8C           00045           decfsz count\n0013 2810           00046           goto loop2\n0014 008F           00047           movwf 0fh           ;Ergebnis abspeichern\n0015 098F           00048           comf 0fh            ;Komplement bilden\n0016 3400           00049           retlw 0             ;Unterprogrammende   \n0017 303F           00052           movlw 3fh           ;zuerst den Vorteiler vom RTCC trennen\n0018 1683           00053           bsf status,5        ;ins Option-Register schreiben\n0019 0081           00054           movwf 1             ;=freg 81h\n001A 1283           00055           bcf status,5        ;zurück auf Bank0\n001B 0100           00056           clrw                ;RTCC-Register löschen\n001C 0081           00057           movwf 1h\n001D 2001           00058           call fillinc        ;Speicherbereich füllen\n001E 200C           00059           call qsumme         ;Quersumme berechnen\n001F 090F           00060           comf 0fh,w          ;Ergebnis holen\n0020 020F           00061           subwf 0fh,w         ;vom Orginalwert abziehen\n0021 008E           00062           movwf 0eh           ;neues Ergebnis abspeichern.\n0022 3010           00063           movlw 10h             \n0023 1683           00064           bsf status,5        ;auf Bank 1 umschalten\n0024 0085           00065           movwf 5             ;=freg 85H  Port A 0-3 auf Ausgang\n0025 1283           00066           bcf status,5        ;zurück auf Bank 0\n0026 0085           00067           movwf ra            ;Signale auf Low  \n0027 1806           00069           btfsc rb,0\n0028 2827           00070           goto main1          ;warten bis RB0 auf 0   \n0029 1C06           00072           btfss rb,0\n002A 2829           00073           goto main2          ;warten bis rb0 wieder 1         \n002B 3020           00074           movlw 20h           ;Option neu setzen, VT=1:2\n002C 1683           00075           bsf status,5        ;Bank 1\n002D 0081           00076           movwf 1             ;hier liegt Option\n002E 1283           00077           bcf status,5        ;wieder Bank 0    \n002F 282F           00081           goto ende           ;Endlosschleife, verhindert Nirwana");
         jScrollPane1.setViewportView(jTextArea1);
 
         jPanel2.setLayout(new java.awt.BorderLayout());
@@ -409,8 +410,8 @@ public class PICSIMGUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -440,7 +441,7 @@ public class PICSIMGUI extends javax.swing.JFrame {
                 }
                 setPortARadios(interpret.pic.getPortA(), interpret.pic.memory[5]);
 
-                Thread.currentThread().sleep(100); //sleep for 1000 ms
+                Thread.currentThread().sleep(0); //sleep for 1000 ms
             } catch (InterruptedException ex) {
                 Logger.getLogger(PICSIMGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -469,20 +470,16 @@ public class PICSIMGUI extends javax.swing.JFrame {
             fileURL = chooser.getSelectedFile().getAbsolutePath();
         //echo(fileURL);
         }
-
-
         String record = null;
 
         try {
 
             jTextArea1.setText("");
-
             FileReader fr = new FileReader(fileURL);
             BufferedReader br = new BufferedReader(fr);
 
             record = new String();
             while ((record = br.readLine()) != null) {
-                //System.out.println(record);
                 jTextArea1.append(record + "\n");
             }
         // InstructionInterpreter interpret = new InstructionInterpreter(recordArray);
