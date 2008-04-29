@@ -12,16 +12,17 @@ import java.io.IOException;
 import java.lang.String;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JTextArea;
-import javax.swing.text.BadLocationException;
 
 /**
  *
- * @author  Mogli BA
+ * @author  Mogli BA, PP
  */
-public class PICSIMGUI extends javax.swing.JFrame {
+public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
+
+    public void run() {
+    }
 
     /** Creates new form PICSIMGUI */
     public PICSIMGUI() {
@@ -29,27 +30,11 @@ public class PICSIMGUI extends javax.swing.JFrame {
         initComponents();
     }
 
-    /*  static public void echo(String s, boolean b = true) {
-    System.out.print(s);
-    }
-     */
     static public void e(Object... parameters) {
         if (parameters.length == 2) {
             System.out.print(parameters[0]);
         } else {
             System.out.print(parameters[0]);
-        }
-    }
-
-    private static void selectRow(int row, JTextArea area) {
-        int start = -1, end = -1;
-        try {
-            start = area.getLineStartOffset(row);
-            end = area.getLineEndOffset(row);
-            area.setSelectionStart(start);
-            area.setSelectionEnd(end);
-        } catch (BadLocationException ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -62,41 +47,49 @@ public class PICSIMGUI extends javax.swing.JFrame {
         } else {
             RadioButtonA0.setSelected(false);
         }
+
         if (port[1] == 1) {
             RadioButtonA1.setSelected(true);
         } else {
             RadioButtonA1.setSelected(false);
         }
+
         if (port[2] == 1) {
             RadioButtonA2.setSelected(true);
         } else {
             RadioButtonA2.setSelected(false);
         }
+
         if (port[3] == 1) {
             RadioButtonA3.setSelected(true);
         } else {
             RadioButtonA3.setSelected(false);
         }
+
         if (port[4] == 1) {
             RadioButtonA4.setSelected(true);
         } else {
             RadioButtonA4.setSelected(false);
         }
+
         if (port[5] == 1) {
             RadioButtonA5.setSelected(true);
         } else {
             RadioButtonA5.setSelected(false);
         }
+
         if (port[6] == 1) {
             RadioButtonA6.setSelected(true);
         } else {
             RadioButtonA6.setSelected(false);
         }
+
         if (port[7] == 1) {
             RadioButtonA7.setSelected(true);
         } else {
             RadioButtonA7.setSelected(false);
         }
+
     }
 
     /** This method is called from within the constructor to
@@ -144,9 +137,10 @@ public class PICSIMGUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         ButtonRun.setText("Start");
-        ButtonRun.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ButtonRunActionPerformed(evt);
+        ButtonRun.setToolTipText("Start Compiling");
+        ButtonRun.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                ButtonRunMouseReleased(evt);
             }
         });
 
@@ -202,7 +196,7 @@ public class PICSIMGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(RadioButtonA0)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TextFieldPortAValue, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE))
+                                .addComponent(TextFieldPortAValue, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
                             .addGroup(PanelPortsLayout.createSequentialGroup()
                                 .addComponent(RadioButtonB7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -222,7 +216,7 @@ public class PICSIMGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelPortsLayout.createSequentialGroup()
                         .addGap(51, 51, 51)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                         .addGap(40, 40, 40)))
                 .addContainerGap())
         );
@@ -279,7 +273,7 @@ public class PICSIMGUI extends javax.swing.JFrame {
                 .addComponent(LabelZFlag)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(LabelCarryFlag)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(158, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout PanelPortsFlagsLayout = new javax.swing.GroupLayout(PanelPortsFlags);
@@ -289,24 +283,23 @@ public class PICSIMGUI extends javax.swing.JFrame {
             .addGroup(PanelPortsFlagsLayout.createSequentialGroup()
                 .addGroup(PanelPortsFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(PanelPortsFlagsLayout.createSequentialGroup()
-                        .addComponent(PanelFlags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(141, 141, 141)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(PanelPorts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(425, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelPortsFlagsLayout.createSequentialGroup()
+                        .addComponent(PanelPorts, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PanelFlags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         PanelPortsFlagsLayout.setVerticalGroup(
             PanelPortsFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(PanelPortsFlagsLayout.createSequentialGroup()
-                .addComponent(PanelPorts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(PanelPortsFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(PanelPortsFlagsLayout.createSequentialGroup()
+                        .addComponent(PanelPorts, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(97, 97, 97)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(PanelPortsFlagsLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(PanelFlags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(PanelFlags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -388,9 +381,9 @@ public class PICSIMGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 727, Short.MAX_VALUE)
-                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 727, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
+                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE))
                         .addGap(5, 5, 5)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -408,11 +401,11 @@ public class PICSIMGUI extends javax.swing.JFrame {
                     .addComponent(InputTextFileButton))
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -421,30 +414,6 @@ public class PICSIMGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     @SuppressWarnings("static-access")
-    private void ButtonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonRunActionPerformed
-
-        ButtonRun.setText("Stop");
-
-        InstructionInterpreter interpret = new InstructionInterpreter(jTextArea1.getText().split("\n"));
-        for (int i = 0; i <= (jTextArea1.getText().split("\n").length - 1); i++) {
-            try {
-                int ret = interpret.translateCodeLine(i);
-                if (ret != -2 && ret != -1) {
-                    i = ret;
-                }
-                if (ret == -1) {
-                    System.err.println("Error in line " + i);
-                    break;
-                }
-                setPortARadios(interpret.pic.getPortA(), interpret.pic.memory[5]);
-
-                Thread.currentThread().sleep(0); //sleep for 1000 ms
-            } catch (InterruptedException ex) {
-                Logger.getLogger(PICSIMGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } 
-}//GEN-LAST:event_ButtonRunActionPerformed
-
     private void TextFieldPortAValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextFieldPortAValueActionPerformed
     // TODO add your handling code here:
     }//GEN-LAST:event_TextFieldPortAValueActionPerformed
@@ -455,10 +424,13 @@ public class PICSIMGUI extends javax.swing.JFrame {
         String initialDirectory = "";
         String fileURL = null;
         JFileChooser chooser;
+
         int returnVal;
 
-        chooser = new JFileChooser(initialDirectory);
-        returnVal = chooser.showOpenDialog((Component) evt.getSource());
+        chooser =
+                new JFileChooser(initialDirectory);
+        returnVal =
+                chooser.showOpenDialog((Component) evt.getSource());
 
         if (returnVal == chooser.APPROVE_OPTION) {
             /* To create a URL for a file on the local file-system, we simply
@@ -466,6 +438,7 @@ public class PICSIMGUI extends javax.swing.JFrame {
              */
             fileURL = chooser.getSelectedFile().getAbsolutePath();
         }
+
         String record = null;
 
         try {
@@ -473,10 +446,12 @@ public class PICSIMGUI extends javax.swing.JFrame {
             FileReader fr = new FileReader(fileURL);
             BufferedReader br = new BufferedReader(fr);
 
-            record = new String();
+            record =
+                    new String();
             while ((record = br.readLine()) != null) {
                 jTextArea1.append(record + "\n");
             }
+
         } catch (IOException e) {
             // catch possible io errors from readLine()
             System.out.println("Uh oh, got an IOException error!");
@@ -484,6 +459,39 @@ public class PICSIMGUI extends javax.swing.JFrame {
         }
 
 }//GEN-LAST:event_InputTextFileButtonActionPerformed
+
+    @SuppressWarnings("static-access")
+    private void ButtonRunMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonRunMouseReleased
+
+        //if("Start".equals(evt))
+        ButtonRun.setText("Stop");
+        java.awt.EventQueue.invokeLater(new Runnable() {
+
+            public void run() {
+                InstructionInterpreter interpret = new InstructionInterpreter(jTextArea1.getText().split("\n"));
+                for (int i = 0; i <=
+                        (jTextArea1.getText().split("\n").length - 1); i++) {
+                    try {
+                        int ret = interpret.translateCodeLine(i);
+                        if (ret != -2 && ret != -1) {
+                            i = ret;
+                        }
+
+                        if (ret == -1) {
+                            System.err.println("Error in line " + i);
+                            break;
+                        }
+
+                        setPortARadios(interpret.pic.getPortA(), interpret.pic.memory[5]);
+
+                        Thread.currentThread().sleep(0); //sleep for 1000 ms
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(PICSIMGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+    }//GEN-LAST:event_ButtonRunMouseReleased
 
     /**
      * @param args the command line arguments

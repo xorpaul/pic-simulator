@@ -3,7 +3,7 @@ package my.PICSIMGUI;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-public class InstructionInterpreter {
+public class InstructionInterpreter{
 
     String[] input;
     private int[] instructions;
@@ -28,7 +28,6 @@ public class InstructionInterpreter {
 
             String adresseHex = singleLinesTrimmed.substring(0, 4);
             String instructionHex = singleLinesTrimmed.substring(5, 9);
-//njeeee
             int adresseInt = Integer.parseInt(adresseHex, 16);
             int instructionInt = Integer.parseInt(instructionHex, 16);
 
