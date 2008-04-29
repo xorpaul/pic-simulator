@@ -428,9 +428,6 @@ public class PICSIMGUI extends javax.swing.JFrame {
         InstructionInterpreter interpret = new InstructionInterpreter(jTextArea1.getText().split("\n"));
         for (int i = 0; i <= (jTextArea1.getText().split("\n").length - 1); i++) {
             try {
-
-                selectRow(i, jTextArea1);
-
                 int ret = interpret.translateCodeLine(i);
                 if (ret != -2 && ret != -1) {
                     i = ret;
@@ -468,12 +465,10 @@ public class PICSIMGUI extends javax.swing.JFrame {
              * pre-pend the "file" protocol to the absolute path of the file.
              */
             fileURL = chooser.getSelectedFile().getAbsolutePath();
-        //echo(fileURL);
         }
         String record = null;
 
         try {
-
             jTextArea1.setText("");
             FileReader fr = new FileReader(fileURL);
             BufferedReader br = new BufferedReader(fr);
@@ -482,8 +477,6 @@ public class PICSIMGUI extends javax.swing.JFrame {
             while ((record = br.readLine()) != null) {
                 jTextArea1.append(record + "\n");
             }
-        // InstructionInterpreter interpret = new InstructionInterpreter(recordArray);
-        //return recordArray;
         } catch (IOException e) {
             // catch possible io errors from readLine()
             System.out.println("Uh oh, got an IOException error!");

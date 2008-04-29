@@ -1,5 +1,6 @@
 package my.PICSIMGUI;
 
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 public class InstructionInterpreter {
@@ -187,33 +188,28 @@ public class InstructionInterpreter {
             return -2;
         } else if (instructions[line] >= 13312 && instructions[line] <= 14335) {
             int f = instructions[line] & 1023;
-            // int returnTo = CallCount.pop();
-            //System.out.println(line + " ist befehl retlw, Rücksprungadresse ist " + returnTo + "Literal ist " + f);
-            System.out.println(line + " ist befehl retlw");
-            //return returnTo;
-            return -2;
+            int returnTo = CallCount.pop();
+            System.out.println(line + " ist befehl retlw, Rücksprungadresse ist " + returnTo + "Literal ist " + f);
+            return returnTo;
         } else if (instructions[line] >= 8192 && instructions[line] <= 10239) {
             int f = instructions[line] & 2047;
             System.out.println(line + " ist befehl Call, Sprungadresse ist " + f);
-            //CallCount.push(line + 1);
-            //return f - 1;
-            return -2;
+            CallCount.push(line + 1);
+            return f - 1;
         } else if (instructions[line] >= 12288 && instructions[line] <= 13311) {
             int k = instructions[line] & 255;
             System.out.println(line + " ist befehl movlw, k ist " + k);
             return -2;
         } else if (instructions[line] == 8) {
             int returnTo;
-            /* try {
-            returnTo = CallCount.pop();
+            try {
+                returnTo = CallCount.pop();
             } catch (EmptyStackException e) {
-            System.err.println("Call Stack ist leer!");
-            return -1;
-            }*/
-            //  System.out.println(line + " ist befehl return. Sprungadresse: " + (returnTo + 1));
-            System.out.println(line + " ist befehl return.");
-            //return returnTo; /*Rücksprungadresse*/
-            return -2;
+                System.err.println("Call Stack ist leer!");
+                return -1;
+            }
+            System.out.println(line + " ist befehl return. Sprungadresse: " + (returnTo + 1));
+            return returnTo; /*Rücksprungadresse*/
         } else if (instructions[line] == 99) {
             System.out.println(line + " ist befehl sleep, f gibt es nicht ");
             return -2;
@@ -228,8 +224,7 @@ public class InstructionInterpreter {
         } else if (instructions[line] >= 10240 && instructions[line] <= 12287) {
             int k = instructions[line] & 0x7ff;
             System.out.println(line + " ist Befehl goto, Sprungadresse: " + k);
-            //return k;
-            return -2;
+            return k;
         } else if (instructions[line] >= 2560 && instructions[line] <= 2815) {
             int f = instructions[line] & 127;
             System.out.println(line + " ist befehl incf, f ist " + f);
@@ -237,7 +232,8 @@ public class InstructionInterpreter {
             pic.setPortA(22);
             pic.INCF(f);
             return -2;
-        } else { /*
+        } else {
+            /*
              * Kein passender Assemblerbefehl gefunden
              */
             return -1;
