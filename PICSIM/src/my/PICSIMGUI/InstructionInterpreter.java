@@ -27,7 +27,7 @@ public class InstructionInterpreter {
 
             String adresseHex = singleLinesTrimmed.substring(0, 4);
             String instructionHex = singleLinesTrimmed.substring(5, 9);
-
+//njeeee
             int adresseInt = Integer.parseInt(adresseHex, 16);
             int instructionInt = Integer.parseInt(instructionHex, 16);
 
