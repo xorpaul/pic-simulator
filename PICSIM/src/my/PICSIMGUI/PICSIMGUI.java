@@ -40,9 +40,13 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
             System.out.print(parameters[0]);
         }
     }
-
+/**
+ * 
+ * @param port 8Bit Array des Wertes in PortA
+ * @param portValue  DezimalWert des Wertes in PortA
+ */
         public void setPortARadios(int[] port, int portValue) 
-        {  
+        {           
                 TextFieldPortAValue.setText(String.valueOf(portValue));
 
                 if (port[0] == 1) {
@@ -93,7 +97,10 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                     RadioButtonA7.setSelected(false);
                 }
             }
- 
+        public void setStatusLabel(String text)
+        {
+            this.LabelStatus.setText(text);
+        }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -136,6 +143,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         InputTextFileButton = new javax.swing.JButton();
+        LabelStatus = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -202,7 +211,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(RadioButtonA0)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TextFieldPortAValue, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
+                                .addComponent(TextFieldPortAValue, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
                             .addGroup(PanelPortsLayout.createSequentialGroup()
                                 .addComponent(RadioButtonB7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -222,7 +231,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelPortsLayout.createSequentialGroup()
                         .addGap(51, 51, 51)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
                         .addGap(40, 40, 40)))
                 .addContainerGap())
         );
@@ -379,6 +388,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
             }
         });
 
+        jLabel1.setText("LAST INSTRUCTION: ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -387,11 +398,13 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
-                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE))
-                        .addGap(5, 5, 5)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+                            .addComponent(LabelStatus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(ButtonRun)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -400,18 +413,22 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ButtonRun)
                     .addComponent(InputTextFileButton))
                 .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(LabelStatus)
+                            .addComponent(jLabel1))))
                 .addContainerGap())
         );
 
@@ -473,7 +490,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 
      
     }//GEN-LAST:event_ButtonRunMouseReleased
-
+/**
+ * 
+ * @param evt Eventhandler. Kommt von NetBeans IDE 6.0.1
+ * @description Startet beim Klick auf den Button einen Thread der die PIC befehle abarbeitet.
+ */
     private void ButtonRunMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonRunMousePressed
         ButtonRun.setText("Stop"); 
         String[] Code = jTextArea1.getText().split("\n");
@@ -501,6 +522,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JLabel LabelCarryFlag;
     private javax.swing.JLabel LabelPortA;
     private javax.swing.JLabel LabelPortB;
+    private javax.swing.JLabel LabelStatus;
     private javax.swing.JLabel LabelZFlag;
     private javax.swing.JPanel PanelFlags;
     private javax.swing.JPanel PanelPorts;
@@ -522,6 +544,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JRadioButton RadioButtonB6;
     private javax.swing.JRadioButton RadioButtonB7;
     private javax.swing.JTextField TextFieldPortAValue;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

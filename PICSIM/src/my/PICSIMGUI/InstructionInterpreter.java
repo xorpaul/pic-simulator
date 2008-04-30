@@ -89,127 +89,126 @@ public class InstructionInterpreter implements Runnable{
          */
         if (instructions[line] >= 128 && instructions[line] <= 255) {
             int f = instructions[line] & 127; //0x00000011111111
+            gui.setStatusLabel("MOFWF " + f);
             System.out.println(line + " ist befehl movwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 256 && instructions[line] <= 383) {
+            gui.setStatusLabel("CLRW");
             System.out.println(line + " ist befehl clrw, f ist ");
             return -2;
         } else if (instructions[line] >= 14592 && instructions[line] <= 14847) {
             int f = instructions[line] & 255;
+            gui.setStatusLabel("ANDLW " + f);
             System.out.println(line + " ist befehl andlw, f ist " + f);
             return -2;
         } else if (instructions[line] >= 1792 && instructions[line] <= 2047) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            int f = instructions[line] & 127;
+            //00 0111 dfff ffff -> Destination Bit prüfen
+            gui.setStatusLabel("ADDWF, F = " + f);
             System.out.println(line + " ist befehl addwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 1280 && instructions[line] <= 1535) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 0101 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
+            gui.setStatusLabel("ANDWF, F = " + f);
             System.out.println(line + " ist befehl andwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 384 && instructions[line] <= 511) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            int f = instructions[line] & 127;
+            gui.setStatusLabel("CLRF, F = " + f);
             System.out.println(line + " ist befehl clrf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 15872 && instructions[line] <= 16383) {
-            //F NOCH MACHEN!!!! ###########
             int f = instructions[line] & 255;
             System.out.println(line + " ist befehl addlw, f ist " + f);
             return -2;
         } else if (instructions[line] >= 256 && instructions[line] <= 383) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl clrw, f ist " + f);
             return -2;
         } else if (instructions[line] >= 2304 && instructions[line] <= 2559) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 1001 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 172;
             System.out.println(line + " ist befehl comf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 768 && instructions[line] <= 1023) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 1010 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl decf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 2816 && instructions[line] <= 3071) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 1011 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl decfsz, f ist " + f);
             return -2;
         } else if (instructions[line] >= 3840 && instructions[line] <= 4095) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 1111 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl incfsz, f ist " + f);
             return -2;
         } else if (instructions[line] >= 1024 && instructions[line] <= 1279) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 0100 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl iorwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 2048 && instructions[line] <= 2303) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 1000 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl movf, f ist " + f);
             return -2;
         } else if (instructions[line] == 0 || instructions[line] == 32 || instructions[line] == 64 || instructions[line] == 96) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
-            System.out.println(line + " ist befehl nop, f ist " + f);
+            System.out.println(line + " ist befehl nop");
             return -2;
         } else if (instructions[line] >= 3328 && instructions[line] <= 3583) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 1101 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl rlf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 3072 && instructions[line] <= 3327) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 1100 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl rrf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 512 && instructions[line] <= 767) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 0010 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl subwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 3584 && instructions[line] <= 3839) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+           //00 1110 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl swapf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 1536 && instructions[line] <= 1791) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //00 0110 dfff ffff -> Destination Bit prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl xorwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 4096 && instructions[line] <= 5119) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //01 00bb bfff ffff -> Bits b prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl bcf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 5120 && instructions[line] <= 6143) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //01 01bb bfff ffff -> Bits b prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl bsf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 6144 && instructions[line] <= 7167) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
+            //01 10bb bfff ffff -> Bits b prüfen
+            int f = instructions[line] & 127;
             System.out.println(line + " ist befehl btfsc, f ist " + f);
             return -2;
         } else if (instructions[line] >= 7168 && instructions[line] <= 8191) {
-            //F NOCH MACHEN!!!! ###########
-            int f = instructions[line] & 255;
-            System.out.println(line + " ist befehl bfss, f ist " + f);
+            //01 11bb bfff ffff -> Bits b prüfen
+            int f = instructions[line] & 127;
+            System.out.println(line + " ist befehl btfss, f ist " + f);
             return -2;
         } else if (instructions[line] >= 15360 && instructions[line] <= 15871) {
-            //F NOCH MACHEN!!!! ###########
             int f = instructions[line] & 255;
             System.out.println(line + " ist befehl sublw, f ist " + f);
             return -2;
         } else if (instructions[line] >= 14848 && instructions[line] <= 15103) {
-            //F NOCH MACHEN!!!! ###########
             int f = instructions[line] & 255;
             System.out.println(line + " ist befehl xorlw, f ist " + f);
             return -2;
@@ -224,7 +223,7 @@ public class InstructionInterpreter implements Runnable{
             System.out.println(line + " ist befehl retfie");
             return -2;
         } else if (instructions[line] >= 13312 && instructions[line] <= 14335) {
-            int f = instructions[line] & 1023;
+            int f = instructions[line] & 255;
             int returnTo = CallCount.pop();
             System.out.println(line + " ist befehl retlw, Rücksprungadresse ist " + returnTo + "Literal ist " + f);
             return returnTo;
@@ -248,25 +247,16 @@ public class InstructionInterpreter implements Runnable{
             System.out.println(line + " ist befehl return. Sprungadresse: " + (returnTo + 1));
             return returnTo; /*Rücksprungadresse*/
         } else if (instructions[line] == 99) {
-            System.out.println(line + " ist befehl sleep, f gibt es nicht ");
+            System.out.println(line + " ist befehl sleep");
             return -2;
-        } else if (instructions[line] >= 15360 && instructions[line] <= 15871) {
-            int f = instructions[line] & 511;
-            System.out.println(line + " ist befehl sublw, f ist " + f);
-            return -2;
-        } else if (instructions[line] >= 14848 && instructions[line] <= 15103) {
-            int f = instructions[line] & 255;
-            System.out.println(line + " ist befehl xorlw, f ist " + f);
-            return -2;
-        } else if (instructions[line] >= 10240 && instructions[line] <= 12287) {
-            int k = instructions[line] & 0x7ff;
+        }else if (instructions[line] >= 10240 && instructions[line] <= 12287) {
+            int k = instructions[line] & 2047;
             System.out.println(line + " ist Befehl goto, Sprungadresse: " + k);
-            return k;
+            return k-1;// Minus eins, weil der returnwert in der interpreterschleife hinterher um 1 erhöht wird
         } else if (instructions[line] >= 2560 && instructions[line] <= 2815) {
             int f = instructions[line] & 127;
             System.out.println(line + " ist befehl incf, f ist " + f);
-            PICSIMGUI.pic.setPortA(22);
-            PICSIMGUI.pic.INCF(f);
+            pic.INCF(f);
             return -2;
         } else {
             /*
