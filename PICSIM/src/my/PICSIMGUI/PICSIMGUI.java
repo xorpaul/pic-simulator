@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
+import java.lang.reflect.Member;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -20,6 +21,8 @@ import javax.swing.JFileChooser;
  * @author  Mogli BA, PP
  */
 public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
+
+    public static PicCPU pic = new PicCPU();
 
     public void run() {
     }
@@ -38,59 +41,59 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         }
     }
 
-    public void setPortARadios(int[] port, int portValue) {
+        public void setPortARadios(int[] port, int portValue) 
+        {  
+                TextFieldPortAValue.setText(String.valueOf(portValue));
 
-        TextFieldPortAValue.setText(String.valueOf(portValue));
+                if (port[0] == 1) {
+                    RadioButtonA0.setSelected(true);
+                } else {
+                    RadioButtonA0.setSelected(false);
+                }
 
-        if (port[0] == 1) {
-            RadioButtonA0.setSelected(true);
-        } else {
-            RadioButtonA0.setSelected(false);
-        }
+                if (port[1] == 1) {
+                    RadioButtonA1.setSelected(true);
+                } else {
+                    RadioButtonA1.setSelected(false);
+                }
 
-        if (port[1] == 1) {
-            RadioButtonA1.setSelected(true);
-        } else {
-            RadioButtonA1.setSelected(false);
-        }
+                if (port[2] == 1) {
+                    RadioButtonA2.setSelected(true);
+                } else {
+                    RadioButtonA2.setSelected(false);
+                }
 
-        if (port[2] == 1) {
-            RadioButtonA2.setSelected(true);
-        } else {
-            RadioButtonA2.setSelected(false);
-        }
+                if (port[3] == 1) {
+                    RadioButtonA3.setSelected(true);
+                } else {
+                    RadioButtonA3.setSelected(false);
+                }
 
-        if (port[3] == 1) {
-            RadioButtonA3.setSelected(true);
-        } else {
-            RadioButtonA3.setSelected(false);
-        }
+                if (port[4] == 1) {
+                    RadioButtonA4.setSelected(true);
+                } else {
+                    RadioButtonA4.setSelected(false);
+                }
 
-        if (port[4] == 1) {
-            RadioButtonA4.setSelected(true);
-        } else {
-            RadioButtonA4.setSelected(false);
-        }
+                if (port[5] == 1) {
+                    RadioButtonA5.setSelected(true);
+                } else {
+                    RadioButtonA5.setSelected(false);
+                }
 
-        if (port[5] == 1) {
-            RadioButtonA5.setSelected(true);
-        } else {
-            RadioButtonA5.setSelected(false);
-        }
+                if (port[6] == 1) {
+                    RadioButtonA6.setSelected(true);
+                } else {
+                    RadioButtonA6.setSelected(false);
+                }
 
-        if (port[6] == 1) {
-            RadioButtonA6.setSelected(true);
-        } else {
-            RadioButtonA6.setSelected(false);
-        }
-
-        if (port[7] == 1) {
-            RadioButtonA7.setSelected(true);
-        } else {
-            RadioButtonA7.setSelected(false);
-        }
-
-    }
+                if (port[7] == 1) {
+                    RadioButtonA7.setSelected(true);
+                } else {
+                    RadioButtonA7.setSelected(false);
+                }
+            }
+ 
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -139,6 +142,9 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         ButtonRun.setText("Start");
         ButtonRun.setToolTipText("Start Compiling");
         ButtonRun.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                ButtonRunMousePressed(evt);
+            }
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 ButtonRunMouseReleased(evt);
             }
@@ -460,38 +466,23 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 
 }//GEN-LAST:event_InputTextFileButtonActionPerformed
 
+
     @SuppressWarnings("static-access")
     private void ButtonRunMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonRunMouseReleased
 
-        //if("Start".equals(evt))
-        ButtonRun.setText("Stop");
-        java.awt.EventQueue.invokeLater(new Runnable() {
 
-            public void run() {
-                InstructionInterpreter interpret = new InstructionInterpreter(jTextArea1.getText().split("\n"));
-                for (int i = 0; i <=
-                        (jTextArea1.getText().split("\n").length - 1); i++) {
-                    try {
-                        int ret = interpret.translateCodeLine(i);
-                        if (ret != -2 && ret != -1) {
-                            i = ret;
-                        }
-
-                        if (ret == -1) {
-                            System.err.println("Error in line " + i);
-                            break;
-                        }
-
-                        setPortARadios(interpret.pic.getPortA(), interpret.pic.memory[5]);
-
-                        Thread.currentThread().sleep(0); //sleep for 1000 ms
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(PICSIMGUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        });
+     
     }//GEN-LAST:event_ButtonRunMouseReleased
+
+    private void ButtonRunMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonRunMousePressed
+        ButtonRun.setText("Stop"); 
+        String[] Code = jTextArea1.getText().split("\n");
+        InstructionInterpreter interpret = new InstructionInterpreter(Code, this, this.pic);
+        Thread interpreterThread = new Thread(interpret);
+        interpreterThread.start();
+        setPortARadios(pic.getPortA(), pic.memory[5]); //GUI-REFRESH THREAD ERSTELLEN, DANN MÜSSTE DER SHIT GEHEN...
+
+    }//GEN-LAST:event_ButtonRunMousePressed
 
     /**
      * @param args the command line arguments
@@ -501,7 +492,6 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 
             public void run() {
                 new PICSIMGUI().setVisible(true);
-                PicCPU test = new PicCPU();
             }
         });
     }

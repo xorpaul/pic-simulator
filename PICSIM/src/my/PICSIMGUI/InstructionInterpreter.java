@@ -1,21 +1,58 @@
 package my.PICSIMGUI;
 
+import java.lang.reflect.Member;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-public class InstructionInterpreter{
+public class InstructionInterpreter implements Runnable{
 
-    String[] input;
+    public  String[] input;
     private int[] instructions;
+    PICSIMGUI gui;
     PicCPU pic;
     Stack<Integer> CallCount = new Stack<Integer>();
+
+
+
+    public void run()
+    {       
+        for (int i = 0; i <= (input.length - 1); i++) 
+        {
+
+                int ret = translateCodeLine(i);
+                if (ret != -2 && ret != -1) 
+                {
+                    i = ret;
+                }
+
+                if (ret == -1) 
+                {
+                    System.err.println("Error in line " + i);
+                    break;
+
+                }
+                try
+                { 
+                    PICSIMGUI.pic.setPortA(i);
+                    gui.setPortARadios(pic.getPortA(), pic.memory[5]);
+                    Thread.sleep(70);
+                }
+                catch(InterruptedException ie)
+                {
+                    System.err.println("InteruptedExeption -> " + ie.getClass());
+                }
+        }
+    }
 
     /**
      * @category Konstruktor
      * @param aInput Erwartet als Parameter ein Array, in jedem Feld steht eine Textzeile.
      */
-    InstructionInterpreter(String[] aInput) {
+    InstructionInterpreter(String[] aInput, PICSIMGUI gui, PicCPU pic) {
         this.input = aInput;
+        this.gui = gui;
+        this.pic = pic;
+        
 
         int[] newInstructions = new int[input.length + 1];
 
@@ -33,7 +70,6 @@ public class InstructionInterpreter{
 
             newInstructions[adresseInt] = instructionInt;
 
-            pic = new PicCPU();
         }
         this.instructions = newInstructions;
     }
@@ -227,9 +263,8 @@ public class InstructionInterpreter{
         } else if (instructions[line] >= 2560 && instructions[line] <= 2815) {
             int f = instructions[line] & 127;
             System.out.println(line + " ist befehl incf, f ist " + f);
-
-            pic.setPortA(22);
-            pic.INCF(f);
+            PICSIMGUI.pic.setPortA(22);
+            PICSIMGUI.pic.INCF(f);
             return -2;
         } else {
             /*

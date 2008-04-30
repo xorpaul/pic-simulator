@@ -71,6 +71,7 @@
         <Property name="toolTipText" type="java.lang.String" value="Start Compiling"/>
       </Properties>
       <Events>
+        <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ButtonRunMousePressed"/>
         <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ButtonRunMouseReleased"/>
       </Events>
     </Component>
