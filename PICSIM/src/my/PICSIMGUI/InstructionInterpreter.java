@@ -47,6 +47,8 @@ public class InstructionInterpreter implements Runnable{
     /**
      * @category Konstruktor
      * @param aInput Erwartet als Parameter ein Array, in jedem Feld steht eine Textzeile.
+     * @param gui GUI des Programms als Objekt mitgeben
+     * @param pic PIC CPU als Objekt mitgeben
      */
     InstructionInterpreter(String[] aInput, PICSIMGUI gui, PicCPU pic) {
         this.input = aInput;
