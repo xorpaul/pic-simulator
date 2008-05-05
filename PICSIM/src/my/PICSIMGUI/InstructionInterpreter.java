@@ -1,6 +1,5 @@
 package my.PICSIMGUI;
 
-import java.lang.reflect.Member;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
@@ -10,15 +9,18 @@ public class InstructionInterpreter implements Runnable{
     private int[] instructions;
     PICSIMGUI gui;
     PicCPU pic;
+    public boolean running;
     Stack<Integer> CallCount = new Stack<Integer>();
 
 
 
     public void run()
-    {       
+    {     
+        
         for (int i = 0; i <= (input.length - 1); i++) 
         {
-
+            if(running ==true)
+            {
                 int ret = translateCodeLine(i);
                 if (ret != -2 && ret != -1) 
                 {
@@ -31,16 +33,24 @@ public class InstructionInterpreter implements Runnable{
                     break;
 
                 }
+                
                 try
                 { 
                     PICSIMGUI.pic.setPortA(i);
                     gui.setPortARadios(pic.getPortA(), pic.memory[5]);
+                    gui.refreshGui();
                     Thread.sleep(70);
                 }
                 catch(InterruptedException ie)
                 {
                     System.err.println("InteruptedExeption -> " + ie.getClass());
                 }
+            }
+            else if (running == false)
+            {
+                System.out.println("Thread beendet");
+                break;
+            }
         }
     }
 
@@ -90,51 +100,56 @@ public class InstructionInterpreter implements Runnable{
         if (instructions[line] >= 128 && instructions[line] <= 255) {
             int f = instructions[line] & 127; //0x00000011111111
             gui.setStatusLabel("MOFWF " + f);
+            pic.MOFWF(f);
             System.out.println(line + " ist befehl movwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 256 && instructions[line] <= 383) {
             gui.setStatusLabel("CLRW");
+            pic.CLRW();
             System.out.println(line + " ist befehl clrw, f ist ");
             return -2;
         } else if (instructions[line] >= 14592 && instructions[line] <= 14847) {
             int f = instructions[line] & 255;
             gui.setStatusLabel("ANDLW " + f);
+            pic.ANDLW(f);
             System.out.println(line + " ist befehl andlw, f ist " + f);
             return -2;
         } else if (instructions[line] >= 1792 && instructions[line] <= 2047) {
             int f = instructions[line] & 127;
-            //00 0111 dfff ffff -> Destination Bit prüfen
-            gui.setStatusLabel("ADDWF, F = " + f);
+            int d = instructions[line] & 128;
+            gui.setStatusLabel("ADDWF, F = " + f + " d ist " + d);
+            pic.ADDWF(f, d);
             System.out.println(line + " ist befehl addwf, f ist " + f);
             return -2;
         } else if (instructions[line] >= 1280 && instructions[line] <= 1535) {
-            //00 0101 dfff ffff -> Destination Bit prüfen
             int f = instructions[line] & 127;
-            gui.setStatusLabel("ANDWF, F = " + f);
+            int d = instructions[line] & 128;
+            gui.setStatusLabel("ANDWF, F = " + f +" d ist " + d);
             System.out.println(line + " ist befehl andwf, f ist " + f);
+            pic.ANDWF(f, d);
             return -2;
         } else if (instructions[line] >= 384 && instructions[line] <= 511) {
             int f = instructions[line] & 127;
             gui.setStatusLabel("CLRF, F = " + f);
             System.out.println(line + " ist befehl clrf, f ist " + f);
+            pic.CLRF(f);
             return -2;
         } else if (instructions[line] >= 15872 && instructions[line] <= 16383) {
             int f = instructions[line] & 255;
             System.out.println(line + " ist befehl addlw, f ist " + f);
-            return -2;
-        } else if (instructions[line] >= 256 && instructions[line] <= 383) {
-            int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl clrw, f ist " + f);
+            pic.ADDLW(f);
             return -2;
         } else if (instructions[line] >= 2304 && instructions[line] <= 2559) {
-            //00 1001 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 172;
-            System.out.println(line + " ist befehl comf, f ist " + f);
+            System.out.println(line + " ist befehl comf, f ist " + f + "d ist " + d);
+            pic.COMF(f, d);
             return -2;
         } else if (instructions[line] >= 768 && instructions[line] <= 1023) {
-            //00 1010 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl decf, f ist " + f);
+            System.out.println(line + " ist befehl decf, f ist " + f + "d ist " + d);
+            pic.DECF(f, d);
             return -2;
         } else if (instructions[line] >= 2816 && instructions[line] <= 3071) {
             //00 1011 dfff ffff -> Destination Bit prüfen
@@ -197,7 +212,8 @@ public class InstructionInterpreter implements Runnable{
         } else if (instructions[line] >= 6144 && instructions[line] <= 7167) {
             //01 10bb bfff ffff -> Bits b prüfen
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl btfsc, f ist " + f);
+            int b = instructions[line] & 896;
+            System.out.println(line + " ist befehl btfsc, f ist " + f + "b ist " + b);
             return -2;
         } else if (instructions[line] >= 7168 && instructions[line] <= 8191) {
             //01 11bb bfff ffff -> Bits b prüfen

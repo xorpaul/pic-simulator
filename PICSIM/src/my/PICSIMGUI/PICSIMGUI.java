@@ -10,10 +10,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
-import java.lang.reflect.Member;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
 /**
@@ -45,6 +41,19 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
  * @param port 8Bit Array des Wertes in PortA
  * @param portValue  DezimalWert des Wertes in PortA
  */
+    @SuppressWarnings("static-access")
+    public void refreshGui()
+    {
+        if(this.pic.statusReg[this.pic.zFlag] == 1)
+            this.RadioButtonZFlag.setSelected(true);
+        else
+            this.RadioButtonZFlag.setSelected(false);
+        if(this.pic.statusReg[this.pic.cFlag] == 1)
+            this.RadioButtonCarryFlag.setSelected(true);
+        else
+            this.RadioButtonCarryFlag.setSelected(false);
+    }
+    
         public void setPortARadios(int[] port, int portValue) 
         {           
                 TextFieldPortAValue.setText(String.valueOf(portValue));
@@ -138,8 +147,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         jLabel3 = new javax.swing.JLabel();
         TextFieldPortAValue = new javax.swing.JTextField();
         PanelFlags = new javax.swing.JPanel();
-        LabelZFlag = new javax.swing.JLabel();
-        LabelCarryFlag = new javax.swing.JLabel();
+        RadioButtonZFlag = new javax.swing.JRadioButton();
+        RadioButtonCarryFlag = new javax.swing.JRadioButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         InputTextFileButton = new javax.swing.JButton();
@@ -211,7 +220,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(RadioButtonA0)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TextFieldPortAValue, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
+                                .addComponent(TextFieldPortAValue, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE))
                             .addGroup(PanelPortsLayout.createSequentialGroup()
                                 .addComponent(RadioButtonB7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -231,7 +240,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PanelPortsLayout.createSequentialGroup()
                         .addGap(51, 51, 51)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
                         .addGap(40, 40, 40)))
                 .addContainerGap())
         );
@@ -268,27 +277,41 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 
         PanelFlags.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Status Flags", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11)));
 
-        LabelZFlag.setText("Z-Flag");
+        RadioButtonZFlag.setText("Z-Flag");
+        RadioButtonZFlag.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        RadioButtonZFlag.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        RadioButtonZFlag.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RadioButtonZFlagActionPerformed(evt);
+            }
+        });
 
-        LabelCarryFlag.setText("Carry");
+        RadioButtonCarryFlag.setText("Carry");
+        RadioButtonCarryFlag.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        RadioButtonCarryFlag.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        RadioButtonCarryFlag.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RadioButtonCarryFlagActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout PanelFlagsLayout = new javax.swing.GroupLayout(PanelFlags);
         PanelFlags.setLayout(PanelFlagsLayout);
         PanelFlagsLayout.setHorizontalGroup(
             PanelFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(PanelFlagsLayout.createSequentialGroup()
-                .addGroup(PanelFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(LabelZFlag)
-                    .addComponent(LabelCarryFlag))
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addGroup(PanelFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(RadioButtonCarryFlag, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(RadioButtonZFlag, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
         PanelFlagsLayout.setVerticalGroup(
             PanelFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(PanelFlagsLayout.createSequentialGroup()
-                .addComponent(LabelZFlag)
+                .addComponent(RadioButtonZFlag)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(LabelCarryFlag)
-                .addContainerGap(158, Short.MAX_VALUE))
+                .addComponent(RadioButtonCarryFlag)
+                .addContainerGap(146, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout PanelPortsFlagsLayout = new javax.swing.GroupLayout(PanelPortsFlags);
@@ -413,22 +436,22 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ButtonRun)
                     .addComponent(InputTextFileButton))
                 .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(LabelStatus)
-                            .addComponent(jLabel1))))
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(LabelStatus)
+                    .addComponent(jLabel1))
                 .addContainerGap())
         );
 
@@ -496,14 +519,35 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
  * @description Startet beim Klick auf den Button einen Thread der die PIC befehle abarbeitet.
  */
     private void ButtonRunMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonRunMousePressed
-        ButtonRun.setText("Stop"); 
+        
         String[] Code = jTextArea1.getText().split("\n");
         InstructionInterpreter interpret = new InstructionInterpreter(Code, this, this.pic);
-        Thread interpreterThread = new Thread(interpret);
-        interpreterThread.start();
-        setPortARadios(pic.getPortA(), pic.memory[5]); //GUI-REFRESH THREAD ERSTELLEN, DANN MÜSSTE DER SHIT GEHEN...
+        if(evt.getClickCount()%2 == 1)
+        {
+            ButtonRun.setText("Stop");
+            
+            
+            Thread interpreterThread = new Thread(interpret);
+            interpret.running = true;
+            interpreterThread.start();
+        }
+        else if(evt.getClickCount()%2 == 0)
+        {
+            interpret.running = false;
+            ButtonRun.setText("Start");
+        }
+        
 
+        
     }//GEN-LAST:event_ButtonRunMousePressed
+
+    private void RadioButtonZFlagActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RadioButtonZFlagActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_RadioButtonZFlagActionPerformed
+
+    private void RadioButtonCarryFlagActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RadioButtonCarryFlagActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_RadioButtonCarryFlagActionPerformed
 
     /**
      * @param args the command line arguments
@@ -519,11 +563,9 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonRun;
     private javax.swing.JButton InputTextFileButton;
-    private javax.swing.JLabel LabelCarryFlag;
     private javax.swing.JLabel LabelPortA;
     private javax.swing.JLabel LabelPortB;
     private javax.swing.JLabel LabelStatus;
-    private javax.swing.JLabel LabelZFlag;
     private javax.swing.JPanel PanelFlags;
     private javax.swing.JPanel PanelPorts;
     private javax.swing.JPanel PanelPortsFlags;
@@ -543,6 +585,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JRadioButton RadioButtonB5;
     private javax.swing.JRadioButton RadioButtonB6;
     private javax.swing.JRadioButton RadioButtonB7;
+    private javax.swing.JRadioButton RadioButtonCarryFlag;
+    private javax.swing.JRadioButton RadioButtonZFlag;
     private javax.swing.JTextField TextFieldPortAValue;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
