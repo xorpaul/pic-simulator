@@ -185,15 +185,82 @@ public class PicCPU
     public void DECF(int f, int d)
     {
         int result = this.memory[f] - 1;
-        
+
         if (d == 0)
+        {
             this.akku = result;
-        else
+        } else
+        {
             this.memory[f] = result;
+        }
 
         if (result == 0)
+        {
             changeStatusReg(zFlag, 1);
-        else
+        } else
+        {
             changeStatusReg(zFlag, 0);
+        }
     }
+
+    public boolean DECFSZ(int f, int d)
+    {
+        int result = this.memory[f] - 1;
+        if (d == 1)
+        {
+            this.memory[f] = result;
+        } else
+        {
+            this.akku = result;
+        }
+        if (result == 0)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public boolean INCFSZ(int f, int d)
+    {
+        int result = this.memory[f] + 1;
+        if (d == 1)
+        {
+            this.memory[f] = result;
+        } else
+        {
+            this.akku = result;
+        }
+        if (result == 0)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+
+    }
+
+    public void IORWF(int f, int d)
+    {
+        int result = this.memory[f] | 255;
+        if (d == 0)
+        {
+            this.akku = result;
+        } else
+        {
+            this.memory[f] = result;
+        }
+
+        if (result == 0)
+        {
+            changeStatusReg(zFlag, 1);
+        } else
+        {
+            changeStatusReg(zFlag, 0);
+        }
+    }
+
+
 }

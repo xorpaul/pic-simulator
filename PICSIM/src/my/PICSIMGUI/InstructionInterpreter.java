@@ -152,52 +152,59 @@ public class InstructionInterpreter implements Runnable{
             pic.DECF(f, d);
             return -2;
         } else if (instructions[line] >= 2816 && instructions[line] <= 3071) {
-            //00 1011 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl decfsz, f ist " + f);
-            return -2;
+            System.out.println(line + " ist befehl decfsz, f ist " + f + "d ist " + d);
+            if(pic.DECFSZ(f, d))
+                return line + 1;
+            else
+                return -2;
         } else if (instructions[line] >= 3840 && instructions[line] <= 4095) {
-            //00 1111 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl incfsz, f ist " + f);
-            return -2;
+            System.out.println(line + " ist befehl incfsz, f ist " + f + "d ist " + d);
+            if(pic.INCFSZ(f, d))
+                return line + 1;
+            else
+                return -2;
         } else if (instructions[line] >= 1024 && instructions[line] <= 1279) {
-            //00 0100 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl iorwf, f ist " + f);
+            System.out.println(line + " ist befehl iorwf, f ist " + f + "d ist " + d);
+            pic.IORWF(f, d);
             return -2;
         } else if (instructions[line] >= 2048 && instructions[line] <= 2303) {
-            //00 1000 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl movf, f ist " + f);
-            return -2;
+            System.out.println(line + " ist befehl movf, f ist " + f + "d ist " + d);
+            return 2;
         } else if (instructions[line] == 0 || instructions[line] == 32 || instructions[line] == 64 || instructions[line] == 96) {
             System.out.println(line + " ist befehl nop");
             return -2;
         } else if (instructions[line] >= 3328 && instructions[line] <= 3583) {
-            //00 1101 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl rlf, f ist " + f);
+            System.out.println(line + " ist befehl rlf, f ist " + f + "d ist " + d);
             return -2;
         } else if (instructions[line] >= 3072 && instructions[line] <= 3327) {
-            //00 1100 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl rrf, f ist " + f);
+            System.out.println(line + " ist befehl rrf, f ist " + f + "d ist " + d);
             return -2;
         } else if (instructions[line] >= 512 && instructions[line] <= 767) {
-            //00 0010 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl subwf, f ist " + f);
+            System.out.println(line + " ist befehl subwf, f ist " + f + "d ist " + d);
             return -2;
         } else if (instructions[line] >= 3584 && instructions[line] <= 3839) {
-           //00 1110 dfff ffff -> Destination Bit prüfen
+           int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl swapf, f ist " + f);
+            System.out.println(line + " ist befehl swapf, f ist " + f + "d ist " + d);
             return -2;
         } else if (instructions[line] >= 1536 && instructions[line] <= 1791) {
-            //00 0110 dfff ffff -> Destination Bit prüfen
+            int d = instructions[line] & 128;
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl xorwf, f ist " + f);
+            System.out.println(line + " ist befehl xorwf, f ist " + f + "d ist " + d);
             return -2;
         } else if (instructions[line] >= 4096 && instructions[line] <= 5119) {
             //01 00bb bfff ffff -> Bits b prüfen
