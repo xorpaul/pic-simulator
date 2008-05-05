@@ -3,29 +3,42 @@ package my.PICSIMGUI;
 public class PicCPU {
 
     static int portA = 5; //Adresse von PortA
-    static int portB = 6; //Adresse von PortA
-    static int zFlag = 2;
-    static int cFlag = 0;
-    static int dcFlag = 1;
-    int[] statusReg = new int[8];
-    public int[] memory; //Gesamter Speicher des Pic
-    int akku;
+    static int portB = 6; //Adresse von PortB
+    static int trisA = 5; //Adresse von TrisA
+    static int trisB = 6; //Adresse von TrisB
+    static int zFlag = 2; //Bit# des zFLAG im Statusregister
+    static int cFlag = 0; //Bit# des CarryFLAG im Statusregister
+    static int dcFlag = 1; //Bit# des dcFLAG im Statusregister
+    static int rp0 = 5;//RP0 gesetzt -> Bank 1 aktiv, RP0 nicht gesetz: Bank 0 aktiv
+    int[] statusReg = new int[8]; //Status Register als Array
+    public int[] memoryBank0; //Gesamte Speichernak 0 des Pic
+    public int[] memoryBank1; //Gesamte Speichernak 1 des Pic
+    int akku;   //W-Register des Pic
 
+    /**
+     * @category Konsruktor. Speicher initilisieren
+     */
     PicCPU() {
-        memory = new int[256];
+        memoryBank0 = new int[128];
+        memoryBank1 = new int[128];
         akku = 0;
     }
-
+    
     public void setPortA(int value) {
-        this.memory[portA] = value;
+        this.memoryBank0[portA] = value;
     }
-
+    
+    /**
+     * 
+     * @param position Bit welches im Statusregister veränder werden soll. Vrgl static int am Klassenanfang
+     * @param value darf 0 oder 1 sein entsprechend für high oder low
+     */
     public void changeStatusReg(int position, int value) {
         statusReg[position] = value;
     }
 
     public int[] getPortA() {
-        int a = this.memory[portA];
+        int a = this.memoryBank0[portA];
         int[] portABits = new int[8];
 
         for (int i = 0; i < 8; i++) {
@@ -36,7 +49,7 @@ public class PicCPU {
     }
 
     public int[] getPortB() {
-        int a = this.memory[portB];
+        int a = this.memoryBank0[portB];
         int[] portBBits = new int[8];
 
         for (int i = 0; i < 8; i++) {
@@ -76,7 +89,7 @@ public class PicCPU {
     }
 
     public void printPortA() {
-        System.err.println("Im Port A steht: " + this.memory[portA]);
+        System.err.println("Im Port A steht: " + this.memoryBank0[portA]);
     }
 
     public void printW() {
@@ -85,11 +98,11 @@ public class PicCPU {
 
 //TODO!
     public void INCF(int f) {
-        memory[f]++;
+        memoryBank0[f]++;
     }
 
     public void MOFWF(int f) {
-        memory[f] = this.akku;
+        memoryBank0[f] = this.akku;
     }
 
     public void CLRW() {
@@ -107,7 +120,7 @@ public class PicCPU {
     }
 
     public void ADDWF(int f, int d) {
-        int result = this.akku + this.memory[f];
+        int result = this.akku + this.memoryBank0[f];
         if (d == 0) {
             if (result > 255) {
                 checkFlags(result);
@@ -122,29 +135,29 @@ public class PicCPU {
             if (result > 255) {
                 checkFlags(result);
                 result -= 255;
-                this.memory[f] = result;
+                this.memoryBank0[f] = result;
 
             } else {
                 checkFlags(result);
-                this.memory[f] = result;
+                this.memoryBank0[f] = result;
             }
         }
 
     }
 
     public void ANDWF(int f, int d) {
-        int result = this.akku & this.memory[f];
+        int result = this.akku & this.memoryBank0[f];
         if (d == 0) {
             checkFlags(result);
             this.akku = result;
         } else {
             checkFlags(result);
-            this.memory[f] = result;
+            this.memoryBank0[f] = result;
         }
     }
 
     public void CLRF(int f) {
-        this.memory[f] = 0;
+        this.memoryBank0[f] = 0;
         changeStatusReg(zFlag, 1);
     }
 
@@ -163,23 +176,23 @@ public class PicCPU {
     }
 
     public void COMF(int f, int d) {
-        int result = this.memory[f] ^ 255;
+        int result = this.memoryBank0[f] ^ 255;
         if (d == 0) {
             checkFlags(result);
             this.akku = result;
         } else {
             checkFlags(result);
-            this.memory[f] = result;
+            this.memoryBank0[f] = result;
         }
     }
 
     public void DECF(int f, int d) {
-        int result = this.memory[f] - 1;
+        int result = this.memoryBank0[f] - 1;
 
         if (d == 0) {
             this.akku = result;
         } else {
-            this.memory[f] = result;
+            this.memoryBank0[f] = result;
         }
 
         if (result == 0) {
@@ -190,9 +203,9 @@ public class PicCPU {
     }
 
     public boolean DECFSZ(int f, int d) {
-        int result = this.memory[f] - 1;
+        int result = this.memoryBank0[f] - 1;
         if (d != 0) {
-            this.memory[f] = result;
+            this.memoryBank0[f] = result;
         } else {
             this.akku = result;
         }
@@ -204,9 +217,9 @@ public class PicCPU {
     }
 
     public boolean INCFSZ(int f, int d) {
-        int result = this.memory[f] + 1;
+        int result = this.memoryBank0[f] + 1;
         if (d != 0) {
-            this.memory[f] = result;
+            this.memoryBank0[f] = result;
         } else {
             this.akku = result;
         }
@@ -219,11 +232,11 @@ public class PicCPU {
     }
 
     public void IORWF(int f, int d) {
-        int result = this.memory[f] | 255;
+        int result = this.memoryBank0[f] | 255;
         if (d == 0) {
             this.akku = result;
         } else {
-            this.memory[f] = result;
+            this.memoryBank0[f] = result;
         }
 
         if (result == 0) {

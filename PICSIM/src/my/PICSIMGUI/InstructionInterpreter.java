@@ -32,10 +32,8 @@ public class InstructionInterpreter implements Runnable {
                 }
 
                 try {
-                    //PICSIMGUI.pic.setPortA(i);
-                    gui.setPortARadios(pic.getPortA(), pic.memory[pic.portA]);
-                    gui.setPortBRadios(pic.getPortB(), pic.memory[pic.portB]);
-                    gui.setWRadios(pic.getW(), pic.akku);
+                    //pic.setPortA(i);
+                   
                     gui.refreshGui();
                     Thread.sleep(700);
                 } catch (InterruptedException ie) {
@@ -80,6 +78,31 @@ public class InstructionInterpreter implements Runnable {
         this.instructions = newInstructions;
     }
 
+    public int getBitsFromB(int b)
+    {
+        switch(b)
+        {
+            case 0:
+                return 0;
+            case 128:
+                return 1;
+            case 256:
+                return 2;
+            case 384:
+                return 3;
+            case 512:
+                return 4;
+            case 640:
+                return 5;
+            case 768:
+                return 6;
+            case 896:
+                return 7;
+            default:
+                System.err.println("Fehler beim lesen der bits.");
+                return -1;
+        }
+    }    
     /**
      * 
      * @param line Zeilennummer des eingelesenen Codes (spalte gant links)
@@ -204,23 +227,23 @@ public class InstructionInterpreter implements Runnable {
             return -2;
         } else if (instructions[line] >= 4096 && instructions[line] <= 5119) {
             int f = instructions[line] & 127;
-            int b = instructions[line] & 896;
+            int b = getBitsFromB(instructions[line] & 896);
             System.out.println(line + " ist befehl bcf, f ist " + f + " b ist " + b);
             return -2;
         } else if (instructions[line] >= 5120 && instructions[line] <= 6143) {
-            int b = instructions[line] & 896;
+            int b = getBitsFromB(instructions[line] & 896);
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl bsf, f ist " + f);
+            System.out.println(line + " ist befehl bsf, f ist " + f + " b ist " + b);
             return -2;
         } else if (instructions[line] >= 6144 && instructions[line] <= 7167) {
             int f = instructions[line] & 127;
-            int b = instructions[line] & 896;
+            int b = getBitsFromB(instructions[line] & 896);
             System.out.println(line + " ist befehl btfsc, f ist " + f + " b ist " + b);
             return -2;
         } else if (instructions[line] >= 7168 && instructions[line] <= 8191) {
-            int b = instructions[line] & 896;
+            int b = getBitsFromB(instructions[line] & 896);
             int f = instructions[line] & 127;
-            System.out.println(line + " ist befehl btfss, f ist " + f);
+            System.out.println(line + " ist befehl btfss, f ist " + f + " b ist " + b);
             return -2;
         } else if (instructions[line] >= 15360 && instructions[line] <= 15871) {
             int f = instructions[line] & 255;
