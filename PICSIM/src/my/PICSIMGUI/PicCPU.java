@@ -2,18 +2,23 @@ package my.PICSIMGUI;
 
 public class PicCPU {
 
-    static int portA = 5; //Adresse von PortA
-    static int portB = 6; //Adresse von PortB
-    static int trisA = 5; //Adresse von TrisA
-    static int trisB = 6; //Adresse von TrisB
-    static int zFlag = 2; //Bit# des zFLAG im Statusregister
-    static int cFlag = 0; //Bit# des CarryFLAG im Statusregister
-    static int dcFlag = 1; //Bit# des dcFLAG im Statusregister
-    static int rp0 = 5;//RP0 gesetzt -> Bank 1 aktiv, RP0 nicht gesetz: Bank 0 aktiv
-    int[] statusReg = new int[8]; //Status Register als Array
+    //Häufig verwendete Adressen und Bitpositionen
+    
+    public final int portA = 5; //Adresse von PortA
+    public final int portB = 6; //Adresse von PortB
+    public final int trisA = 5; //Adresse von TrisA
+    public final int trisB = 6; //Adresse von TrisB
+    public final int status = 3;//Adresse des StatusRegisters
+    public final int zFlag = 2; //Bit# des zFLAG im Statusregister
+    public final int cFlag = 0; //Bit# des CarryFLAG im Statusregister
+    public final int dcFlag = 1; //Bit# des dcFLAG im Statusregister
+    public final int rp0 = 5;//RP0 gesetzt -> Bank 1 aktiv, RP0 nicht gesetz: Bank 0 aktiv
+    
+    //Speicherstruktur 
+    public int[] statusReg = new int[8]; //Status Register als Array -> Adr.3
     public int[] memoryBank0; //Gesamte Speichernak 0 des Pic
     public int[] memoryBank1; //Gesamte Speichernak 1 des Pic
-    int akku;   //W-Register des Pic
+    public int akku;   //W-Register des Pic
 
     /**
      * @category Konsruktor. Speicher initilisieren
@@ -29,8 +34,21 @@ public class PicCPU {
     }
     
     /**
-     * 
-     * @param position Bit welches im Statusregister veränder werden soll. Vrgl static int am Klassenanfang
+     * Erstellt einen IntegerWert aus dem statusRegister Array
+     * und schreibt es an die Adresse 3 der Speicherbänke.
+     */
+    public void statusToMemory()
+    {       
+        String statusAsBin="";
+        for(int i = 7; i >=0; i--)
+        {  
+            statusAsBin+=String.valueOf(statusReg[i]);
+        }        
+        memoryBank0[status] = Integer.parseInt(statusAsBin, 2);
+        memoryBank1[status] = Integer.parseInt(statusAsBin, 2);
+    }
+    /**
+     * @param position Bit welches im Statusregister veränder werden soll. Vrgl final int's am Klassenanfang
      * @param value darf 0 oder 1 sein entsprechend für high oder low
      */
     public void changeStatusReg(int position, int value) {
