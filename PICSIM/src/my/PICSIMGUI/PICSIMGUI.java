@@ -35,7 +35,9 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     {
     }
 
-    /** Creates new form PICSIMGUI */
+    /** Creates new form PICSIMGUI
+     * 
+     */
     public PICSIMGUI()
     {
         super("PIC16F84 - SIMULATOR");
@@ -52,7 +54,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
             contentBank1[i][1] = String.valueOf(pic.memoryBank1[i]);
         }
 
-        contentBank0[0][0] = "NA";
+        contentBank0[0][0] = "Register " + String.valueOf(pic.memoryBank0[4]);
         contentBank0[1][0] = "TMR0";
         contentBank0[2][0] = "PCL";
         contentBank0[3][0] = "STATUS";
@@ -64,7 +66,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         contentBank0[10][0] = "PCLATH";
         contentBank0[11][0] = "INTCON";
 
-        contentBank1[0][0] = "NA";
+        contentBank1[0][0] = "Register " + String.valueOf(pic.memoryBank1[4]);
         contentBank1[1][0] = "OPTION";
         contentBank1[2][0] = "PCL";
         contentBank1[3][0] = "STATUS";
@@ -121,9 +123,9 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
             this.RadioButtonCarryFlag.setSelected(false);
 
         if (this.pic.statusReg[pic.rp0] == 1)
-            this.RadioButtonCarryFlag.setSelected(true);
+            this.RadioButtonRP0Flag.setSelected(true);
         else
-            this.RadioButtonCarryFlag.setSelected(false);
+            this.RadioButtonRP0Flag.setSelected(false);
     }
 
     public void setWRadios(int[] akkuArray, int akkuValue)
@@ -273,6 +275,9 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
             dm0.setValueAt(pic.memoryBank0[i], i, 1);
             dm1.setValueAt(pic.memoryBank1[i], i, 1);
         }
+        dm0.setValueAt("Register " + pic.memoryBank0[4], 0, 0);
+        dm1.setValueAt("Register " + pic.memoryBank1[4], 0, 0);
+                
         TableBank0.setModel(dm0);
         TableBank1.setModel(dm1);
     }
@@ -360,6 +365,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         PanelFlags.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Status Flags", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11)));
 
         RadioButtonZFlag.setText("Z-Flag");
+        RadioButtonZFlag.setEnabled(false);
         RadioButtonZFlag.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         RadioButtonZFlag.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
@@ -405,7 +411,6 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         TextFieldPortAValue.setEditable(false);
         TextFieldPortAValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        TextFieldPortBValue.setBackground(new java.awt.Color(255, 255, 255));
         TextFieldPortBValue.setEditable(false);
         TextFieldPortBValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
@@ -503,7 +508,6 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
 
         jLabel4.setText("   7     6     5     4     3     2     1     0");
 
-        TextFieldWValue.setBackground(new java.awt.Color(255, 255, 255));
         TextFieldWValue.setEditable(false);
         TextFieldWValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 

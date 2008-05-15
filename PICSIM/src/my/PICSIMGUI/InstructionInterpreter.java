@@ -31,12 +31,14 @@ public class InstructionInterpreter implements Runnable
                 {
                     System.err.println("Error in line " + i);
                     break;
-
                 }
                 try
                 {
                     //pic.setPortA(i);
+                    pic.setBank();
+                    pic.fsrMemoryManagement();
                     pic.statusToMemory();
+                    
                     gui.refreshGui();
                     
                     if(gui.interpreterSlow)
@@ -304,6 +306,7 @@ public class InstructionInterpreter implements Runnable
             int b = getBitsFromB(instructions[line] & 896);
             gui.setStatusLabel("BCF " + f + "," + b);
             System.out.println(line + " ist befehl bcf, f ist " + f + " b ist " + b);
+            pic.BCF(f,b);
             return -2;
         }
         else if (instructions[line] >= 5120 && instructions[line] <= 6143)
@@ -312,6 +315,7 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("BSF " + f + "," + b);
             System.out.println(line + " ist befehl bsf, f ist " + f + " b ist " + b);
+            pic.BSF(f, b);
             return -2;
         }
         else if (instructions[line] >= 6144 && instructions[line] <= 7167)
@@ -445,4 +449,5 @@ public class InstructionInterpreter implements Runnable
             System.out.println(x);
         }
     }
+
 }
