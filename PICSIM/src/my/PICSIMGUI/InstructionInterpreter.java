@@ -38,10 +38,17 @@ public class InstructionInterpreter implements Runnable
                     
                     gui.refreshGui();
                     
+                    
+ 
+                    
                     if(gui.interpreterSlow)
                         Thread.sleep(1000);
                     else
-                        Thread.sleep(10);   
+                        Thread.sleep(10);  
+                    
+                    gui.readGui();
+                    //Read muss nach dem sleep erfolgen, da die 
+                    //eingabe sonst überlesen wird
                 }
                 catch (InterruptedException ie)
                 {
@@ -249,12 +256,14 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("MOVF " + f + "," + d);
             System.out.println(line + " ist befehl movf, f ist " + f + "d ist " + d);
+            pic.MOVF(f, d);
             return 2;
         }
         else if (instructions[line] == 0 || instructions[line] == 32 || instructions[line] == 64 || instructions[line] == 96)
         {
             System.out.println(line + " ist befehl nop");
             gui.setStatusLabel("NOP");
+            pic.NOP();
             return -2;
         }
         else if (instructions[line] >= 3328 && instructions[line] <= 3583)
@@ -263,6 +272,7 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("RLF " + f + "," + d);
             System.out.println(line + " ist befehl rlf, f ist " + f + " d ist " + d);
+            pic.RLF(f, d);
             return -2;
         }
         else if (instructions[line] >= 3072 && instructions[line] <= 3327)
@@ -271,6 +281,7 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("RRF " + f + "," + d);
             System.out.println(line + " ist befehl rrf, f ist " + f + " d ist " + d);
+            pic.RRF(f, d);
             return -2;
         }
         else if (instructions[line] >= 512 && instructions[line] <= 767)
@@ -279,6 +290,7 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("SUBWF " + f + "," + d);
             System.out.println(line + " ist befehl subwf, f ist " + f + " d ist " + d);
+            pic.SUBWF(f, d);
             return -2;
         }
         else if (instructions[line] >= 3584 && instructions[line] <= 3839)
@@ -287,6 +299,7 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("SWAPF " + f + "," + d);
             System.out.println(line + " ist befehl swapf, f ist " + f + " d ist " + d);
+            pic.SWAPF(f, d);
             return -2;
         }
         else if (instructions[line] >= 1536 && instructions[line] <= 1791)
@@ -295,6 +308,7 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("XORWF " + f + "," + d);
             System.out.println(line + " ist befehl xorwf, f ist " + f + " d ist " + d);
+            pic.XORWF(f, d);
             return -2;
         }
         else if (instructions[line] >= 4096 && instructions[line] <= 5119)
@@ -321,6 +335,7 @@ public class InstructionInterpreter implements Runnable
             int b = getBitsFromB(instructions[line] & 896);
             gui.setStatusLabel("BTFSC " + f + "," + b);
             System.out.println(line + " ist befehl btfsc, f ist " + f + " b ist " + b);
+            pic.BTFSC(f, b);
             return -2;
         }
         else if (instructions[line] >= 7168 && instructions[line] <= 8191)
@@ -329,6 +344,7 @@ public class InstructionInterpreter implements Runnable
             int f = instructions[line] & 127;
             gui.setStatusLabel("BTFSS " + f + "," + b);
             System.out.println(line + " ist befehl btfss, f ist " + f + " b ist " + b);
+            pic.BTFSS(f, b);
             return -2;
         }
         else if (instructions[line] >= 15360 && instructions[line] <= 15871)
@@ -351,7 +367,7 @@ public class InstructionInterpreter implements Runnable
         {
             System.out.println(line + " ist befehl clrwdt");
             gui.setStatusLabel("CLRWDT");
-            // pic.CLRWDT(f); wo im speicher ist der watchdogtimer?
+            pic.CLRWDT(); //wo im speicher ist der watchdogtimer?
             return -2;
         }
         else if (instructions[line] >= 14336 && instructions[line] <= 14591)
@@ -366,6 +382,7 @@ public class InstructionInterpreter implements Runnable
         {
             gui.setStatusLabel("RETFIE");
             System.out.println(line + " ist befehl retfie");
+            pic.RETFIE();
             return -2;
         }
         else if (instructions[line] >= 13312 && instructions[line] <= 14335)
@@ -374,6 +391,7 @@ public class InstructionInterpreter implements Runnable
             int returnTo = CallCount.pop();
             gui.setStatusLabel("RETLW " + f);
             System.out.println(line + " ist befehl retlw, Rücksprungadresse ist " + returnTo + "Literal ist " + f);
+            pic.RETLW(f);
             return returnTo;
         }
         else if (instructions[line] >= 8192 && instructions[line] <= 10239)
@@ -388,7 +406,7 @@ public class InstructionInterpreter implements Runnable
         {
             int l = instructions[line] & 255;
             gui.setStatusLabel("MOVLW " + l);
-            System.out.println(line + " ist befehl movlw, k ist " + l);
+            System.out.println(line + " ist befehl movlw, l ist " + l);
             pic.MOVLW(l);
             return -2;
         }
@@ -412,6 +430,7 @@ public class InstructionInterpreter implements Runnable
         {
             gui.setStatusLabel("SLEEP");
             System.out.println(line + " ist befehl sleep");
+            pic.SLEEP(line, line);
             return -2;
         }
         else if (instructions[line] >= 10240 && instructions[line] <= 12287)
@@ -443,7 +462,7 @@ public class InstructionInterpreter implements Runnable
     {
         for (long x : this.instructions)
         {
-            System.out.println(x + "njeee");
+            System.out.println(x);
         }
     }
 

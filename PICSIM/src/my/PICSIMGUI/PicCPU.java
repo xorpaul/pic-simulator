@@ -77,9 +77,9 @@ public class PicCPU
     public int[] getPortA()
     {
         int a = this.memoryBank0[portA];
-        int[] portABits = new int[8];
+        int[] portABits = new int[5];
 
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 5; i++)
         {
             portABits[i] = a % 2;
             a /= 2;
@@ -87,6 +87,33 @@ public class PicCPU
         return portABits;
     }
 
+    /**
+     * Schreibt den neuen Wert des PortA in seine Speicheradresse.
+     * Ausgelesen werrden die RadioButtons, werte an ein array übergeben     * 
+     * @param portAReadIn Enthält Information über geänderte Port Eingänge
+     * 0 --> Eingang auf 0 gesetzt
+     * 1 --> Eingang auf 1 gesetzt
+     * -2 -> Port ist ein Ausgang
+     */
+    public void setPortA(int [] portAReadIn)
+    {
+        String binValue = "";
+                
+        for(int i = 4; i >= 0 ; i--)
+        {
+            if(portAReadIn[i] == -2)
+                binValue += String.valueOf(getPortA()[i]);
+            else
+                binValue += String.valueOf(portAReadIn[i]);
+        }
+
+        this.memoryBank0[portA] = Integer.parseInt(binValue,2);    
+    }
+    
+    /**
+     * Schreibt den Wert von PortA als Bits in ein array
+     * @return Wert von PortA. Jedes Feld entspricht einem Bit
+     */
     public int[] getPortB()
     {
         int a = this.memoryBank0[portB];
@@ -100,19 +127,63 @@ public class PicCPU
         return portBBits;
     }
 
-    public int[] getW()
+    /**
+     * Schreibt den neuen Wert des PortB in seine Speicheradresse.
+     * Ausgelesen werrden die RadioButtons, werte an ein array übergeben     * 
+     * @param portAReadIn Enthält Information über geänderte Port Eingänge
+     * 0 --> Eingang auf 0 gesetzt
+     * 1 --> Eingang auf 1 gesetzt
+     * -2 -> Port ist ein Ausgang
+     */
+    public void setPortB(int [] portBReadIn)
     {
-        int a = this.akku;
-        int[] WBits = new int[8];
+        String binValue = "";
+                
+        for(int i = 7; i >= 0 ; i--)
+        {
+            if(portBReadIn[i] == -2)
+                binValue += String.valueOf(getPortB()[i]);
+            else
+                binValue += String.valueOf(portBReadIn[i]);
+        }
+
+        this.memoryBank0[portB] = Integer.parseInt(binValue,2);    
+    }
+    
+    /**
+     * Schreibt den Wert von TrisA als Bits in ein array
+     * @return Wert von TrisA. Jedes Feld entspricht einem Bit
+     */
+    public int[] getTrisA()
+    {
+        int a = this.memoryBank1[trisA];
+        int[] trisABits = new int[5];
+
+        for (int i = 0; i < 5; i++)
+        {
+            trisABits[i] = a % 2;
+            a /= 2;
+        }
+        return trisABits;
+    }
+    
+    /**
+     * Schreibt den Wert von TrisB als Bits in ein array
+     * @return Wert von TrisB. Jedes Feld entspricht einem Bit
+     */
+    public int[] getTrisB()
+    {
+        int a = this.memoryBank1[trisB];
+        int[] trisBBits = new int[8];
 
         for (int i = 0; i < 8; i++)
         {
-            WBits[i] = a % 2;
+            trisBBits[i] = a % 2;
             a /= 2;
         }
-        return WBits;
+        return trisBBits;
     }
-
+    
     public void checkFlags(int result)
     {
         if (result > 255)
@@ -143,7 +214,6 @@ public class PicCPU
         System.err.println("Im Akku steht: " + this.akku);
     }
 
-//TODO!
     public void INCF(int f)
     {
         if (activeBank == 0)
@@ -653,26 +723,167 @@ public class PicCPU
         if (f == status)
             statusReg[b] = 1;
     }
+   
+    public void MOVF(int f, int d)
+    {
+        if(this.activeBank == 0)
+        {
+            if(d==0)
+            {
+                this.akku = memoryBank0[f];
+                if(this.akku == 0)
+                    this.statusReg[zFlag]=1;
+                else
+                    this.statusReg[zFlag]=0;
+            }
+            else
+            {
+               int swap = memoryBank0[f];
+               memoryBank0[f] = 0;
+               memoryBank0[f] = swap;
+               if(memoryBank0[f] == 0)
+                   this.statusReg[zFlag] = 1;
+               else
+                    this.statusReg[zFlag]=0;
+            }   
+        }
+        else
+        {
+            if(d==0)
+            {
+                this.akku = memoryBank1[f];
+                if(this.akku == 0)
+                    this.statusReg[zFlag]=1;
+                else
+                    this.statusReg[zFlag]=0;
+            }
+            else
+            {
+               int swap = memoryBank1[f];
+               memoryBank1[f] = 0;
+               memoryBank1[f] = swap;
+               if(memoryBank1[f] == 0)
+                   this.statusReg[zFlag] = 1;
+               else
+                    this.statusReg[zFlag]=0;
+            }  
+        }
+    }
+    
+    public void NOP()
+    {
+        //TODO:
+        // Cycel ++;
+    }
+    
+    public void RRF(int f, int d)
+    {
+        int result;
+        int oldLsb; 
+        int carry = statusReg[cFlag];
+        
+        if(this.activeBank == 0)
+        {
+            //LSB herausfiltern (0 oder 1 ? )
+            oldLsb = memoryBank0[f] & 1;
+            //Um 1 Bit nach rechts verschieben
+            result = memoryBank0[f] >>> 1;
+        }
+        else
+        {
+            oldLsb = memoryBank1[f] & 1;
+            result = memoryBank1[f] >>> 1;
+        }    
+        //MSB nach >>> ist immer 0
+        //Wenn im Carry ne 1 ist MSB auf 1 setzen (+128)
+        if(carry != 0)
+            result += 128;
+        carry = oldLsb; //imm Carry steht jetzt das alte LSB
+        statusReg[cFlag] = carry;  
+        
+        if(d == 0)
+            this.akku = result;
+        else
+        {
+            if(this.activeBank == 0)
+                this.memoryBank0[f] = result;
+            else
+                this.memoryBank1[f] = result;
+        } 
 
-    //Macht Jörg
+    }
     
-    public void MOVF(int f, int b)
-    {}
+    public void RLF(int f, int d)
+    {
+     int result;
+        int oldMsb; 
+        int carry = statusReg[cFlag];
+        
+        if(this.activeBank == 0)
+        {
+            //LSB herausfiltern (0 oder 1 ? )
+            oldMsb = memoryBank0[f] & 128;
+            //Um 1 Bit nach links verschieben
+            result = memoryBank0[f] << 1;
+        }
+        else
+        {
+            oldMsb = memoryBank1[f] & 128;
+            result = memoryBank1[f] << 1;
+        } 
+        
+        if(oldMsb == 128)
+            oldMsb = 1;
+        
+        //LSB nach << ist immer 0
+        //Wenn im Carry ne 1 ist MSB auf 1 setzen (+1)
+        if(carry != 0)
+            result += 1;
+
+        carry = oldMsb; //imm Carry steht jetzt das alte LSB
+        statusReg[cFlag] = carry;  
+        
+        if(d == 0)
+            this.akku = result;
+        else
+        {
+            if(this.activeBank == 0)
+                this.memoryBank0[f] = result;
+            else
+                this.memoryBank1[f] = result;
+        } 
+    }    
     
-    public void NOP(int f, int b)
-    {}
+    public void SWAPF(int f, int d)
+    {
+        // vertauscht das vordere halbe byte mit dem hintern            
+    }
     
-    public void RRF(int f, int b)
-    {}
-    
-    public void RLF(int f, int b)
-    {}    
-    
-    public void SWAPF(int f, int b)
-    {}
-    
-    public void XORWF(int f, int b)
-    {}  
+    public void XORWF(int f, int d)
+    {
+        int result;
+        if(this.activeBank == 0)
+        {
+            result = this.akku ^ this.memoryBank0[f];
+            if(d == 0)
+                this.akku = result;
+            else
+                this.memoryBank0[f] = result;      
+        }
+        else
+        {
+            result = this.akku ^ this.memoryBank1[f];
+            if(d == 0)
+                this.akku = result;
+            else
+                this.memoryBank1[f] = result;  
+        }
+        
+        if(result == 0) //Bei XOR kann nichts negatives rauskommen!
+            this.statusReg[zFlag] = 1;
+        else
+            this.statusReg[zFlag] = 0;
+    }  
     
     //Macht Paul
     
@@ -682,19 +893,19 @@ public class PicCPU
     public void BTFSS(int f, int b)
     {}    
     
-    public void CLRWDT(int f, int b)
+    public void CLRWDT()
     {}
     
-    public void RETFIE(int f, int b)
+    public void RETFIE()
     {}    
     
-    public void RETLW(int f, int b)
+    public void RETLW(int f)
     {}    
     
     public void SLEEP(int f, int b)
     {}
     
-    public void SUBLW(int f, int b)
+    public void SUBWF(int f, int b)
     {}       
     
 }
