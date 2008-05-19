@@ -132,8 +132,8 @@ public class InstructionInterpreter implements Runnable
         if (instructions[line] >= 128 && instructions[line] <= 255)
         {
             int f = instructions[line] & 127; //0x00000011111111
-            gui.setStatusLabel("MOFWF " + f);
-            pic.MOFWF(f);
+            gui.setStatusLabel("MOVWF " + f);
+            pic.MOVWF(f);
             System.out.println(line + " ist befehl movwf, f ist " + f);
             return -2;
         }

@@ -152,7 +152,7 @@ public class PicCPU
             memoryBank1[f]++;
     }
 
-    public void MOFWF(int f)
+    public void MOVWF(int f)
     {
         if (activeBank == 0)
             memoryBank0[f] = this.akku;
@@ -422,13 +422,13 @@ public class PicCPU
 
     public boolean INCFSZ(int f, int d)
     {
-        int [] currentBank;
-        
-        if(this.activeBank ==  0)
-         currentBank = memoryBank0;
+        int[] currentBank;
+
+        if (this.activeBank == 0)
+            currentBank = memoryBank0;
         else
             currentBank = memoryBank1;
-        
+
         int result = currentBank[f] + 1;
         if (d != 0)
         {
@@ -440,7 +440,7 @@ public class PicCPU
         }
         if (result == 0)
         {
-            if(this.activeBank ==  0)
+            if (this.activeBank == 0)
                 memoryBank0 = currentBank;
             else
                 memoryBank1 = currentBank;
@@ -448,7 +448,7 @@ public class PicCPU
         }
         else
         {
-            if(this.activeBank ==  0)
+            if (this.activeBank == 0)
                 memoryBank0 = currentBank;
             else
                 memoryBank1 = currentBank;
@@ -458,14 +458,30 @@ public class PicCPU
 
     public void IORWF(int f, int d)
     {
-        int result = this.memoryBank0[f] | 255;
-        if (d == 0)
+        int result;
+        if (this.activeBank == 0)
         {
-            this.akku = result;
+            result = this.memoryBank0[f] | 255;
+            if (d == 0)
+            {
+                this.akku = result;
+            }
+            else
+            {
+                this.memoryBank0[f] = result;
+            }
         }
         else
         {
-            this.memoryBank0[f] = result;
+            result = this.memoryBank1[f] | 255;
+            if (d == 0)
+            {
+                this.akku = result;
+            }
+            else
+            {
+                this.memoryBank1[f] = result;
+            }
         }
 
         if (result == 0)
@@ -637,4 +653,48 @@ public class PicCPU
         if (f == status)
             statusReg[b] = 1;
     }
+
+    //Macht Jörg
+    
+    public void MOVF(int f, int b)
+    {}
+    
+    public void NOP(int f, int b)
+    {}
+    
+    public void RRF(int f, int b)
+    {}
+    
+    public void RLF(int f, int b)
+    {}    
+    
+    public void SWAPF(int f, int b)
+    {}
+    
+    public void XORWF(int f, int b)
+    {}  
+    
+    //Macht Paul
+    
+    public void BTFSC(int f, int b)
+    {}
+    
+    public void BTFSS(int f, int b)
+    {}    
+    
+    public void CLRWDT(int f, int b)
+    {}
+    
+    public void RETFIE(int f, int b)
+    {}    
+    
+    public void RETLW(int f, int b)
+    {}    
+    
+    public void SLEEP(int f, int b)
+    {}
+    
+    public void SUBLW(int f, int b)
+    {}       
+    
 }

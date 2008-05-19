@@ -6,6 +6,8 @@
 package my.PICSIMGUI;
 
 import java.awt.Component;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -346,6 +348,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         ButtonRun.setText("Start");
         ButtonRun.setToolTipText("Start Compiling");
