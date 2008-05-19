@@ -19,7 +19,6 @@ public class PicCPU
     public int[] memoryBank0; //Gesamte Speichernak 0 des Pic
     public int[] memoryBank1; //Gesamte Speichernak 1 des Pic
     public int akku;   //W-Register des Pic
-    
     public int activeBank = 0;
 
     /**
@@ -54,18 +53,18 @@ public class PicCPU
 
     public void setBank()
     {
-        if(statusReg[rp0] == 0)
+        if (statusReg[rp0] == 0)
             activeBank = 0;
         else
             activeBank = 1;
     }
-    
+
     public void fsrMemoryManagement()
     {
         this.memoryBank0[0] = this.memoryBank0[this.memoryBank0[fsr]];
         this.memoryBank1[0] = this.memoryBank1[this.memoryBank1[fsr]];
     }
-    
+
     /**
      * @param position Bit welches im Statusregister veränder werden soll. Vrgl final int's am Klassenanfang
      * @param value darf 0 oder 1 sein entsprechend für high oder low
@@ -101,7 +100,6 @@ public class PicCPU
         return portBBits;
     }
 
-    
     public int[] getW()
     {
         int a = this.akku;
@@ -148,12 +146,18 @@ public class PicCPU
 //TODO!
     public void INCF(int f)
     {
-        memoryBank0[f]++;
+        if (activeBank == 0)
+            memoryBank0[f]++;
+        else
+            memoryBank1[f]++;
     }
 
     public void MOFWF(int f)
     {
-        memoryBank0[f] = this.akku;
+        if (activeBank == 0)
+            memoryBank0[f] = this.akku;
+        else
+            memoryBank1[f] = this.akku;
     }
 
     public void CLRW()
@@ -177,35 +181,72 @@ public class PicCPU
 
     public void ADDWF(int f, int d)
     {
-        int result = this.akku + this.memoryBank0[f];
-        if (d == 0)
+        if (activeBank == 0)
         {
-            if (result > 255)
+            int result = this.akku + this.memoryBank0[f];
+            if (d == 0)
             {
-                checkFlags(result);
-                result -= 255;
-                this.akku = result;
+                if (result > 255)
+                {
+                    checkFlags(result);
+                    result -= 255;
+                    this.akku = result;
 
+                }
+                else
+                {
+                    checkFlags(result);
+                    this.akku = result;
+                }
             }
             else
             {
-                checkFlags(result);
-                this.akku = result;
+                if (result > 255)
+                {
+                    checkFlags(result);
+                    result -= 255;
+                    this.memoryBank0[f] = result;
+
+                }
+                else
+                {
+                    checkFlags(result);
+                    this.memoryBank0[f] = result;
+                }
             }
         }
         else
         {
-            if (result > 255)
+            int result = this.akku + this.memoryBank1[f];
+            if (d == 0)
             {
-                checkFlags(result);
-                result -= 255;
-                this.memoryBank0[f] = result;
+                if (result > 255)
+                {
+                    checkFlags(result);
+                    result -= 255;
+                    this.akku = result;
 
+                }
+                else
+                {
+                    checkFlags(result);
+                    this.akku = result;
+                }
             }
             else
             {
-                checkFlags(result);
-                this.memoryBank0[f] = result;
+                if (result > 255)
+                {
+                    checkFlags(result);
+                    result -= 255;
+                    this.memoryBank1[f] = result;
+
+                }
+                else
+                {
+                    checkFlags(result);
+                    this.memoryBank1[f] = result;
+                }
             }
         }
 
@@ -213,22 +254,43 @@ public class PicCPU
 
     public void ANDWF(int f, int d)
     {
-        int result = this.akku & this.memoryBank0[f];
-        if (d == 0)
+        if (activeBank == 0)
         {
-            checkFlags(result);
-            this.akku = result;
+            int result = this.akku & this.memoryBank0[f];
+            if (d == 0)
+            {
+                checkFlags(result);
+                this.akku = result;
+            }
+            else
+            {
+                checkFlags(result);
+                this.memoryBank0[f] = result;
+            }
         }
         else
         {
-            checkFlags(result);
-            this.memoryBank0[f] = result;
+            int result = this.akku & this.memoryBank0[f];
+            if (d == 0)
+            {
+                checkFlags(result);
+                this.akku = result;
+            }
+            else
+            {
+                checkFlags(result);
+                this.memoryBank0[f] = result;
+            }
         }
     }
 
     public void CLRF(int f)
     {
-        this.memoryBank0[f] = 0;
+        if (activeBank == 0)
+            this.memoryBank0[f] = 0;
+        else
+            this.memoryBank1[f] = 0;
+
         changeStatusReg(zFlag, 1);
     }
 
@@ -252,7 +314,12 @@ public class PicCPU
 
     public void COMF(int f, int d)
     {
-        int result = this.memoryBank0[f] ^ 255;
+        int result;
+        if (this.activeBank == 0)
+            result = this.memoryBank0[f] ^ 255;
+        else
+            result = this.memoryBank1[f] ^ 255;
+
         if (d == 0)
         {
             checkFlags(result);
@@ -261,23 +328,42 @@ public class PicCPU
         else
         {
             checkFlags(result);
-            this.memoryBank0[f] = result;
+            if (this.activeBank == 0)
+                this.memoryBank0[f] = result;
+            else
+                this.memoryBank1[f] = result;
         }
     }
 
     public void DECF(int f, int d)
     {
-        int result = this.memoryBank0[f] - 1;
-
-        if (d == 0)
+        int result;
+        if (this.activeBank == 0)
         {
-            this.akku = result;
+            result = this.memoryBank0[f] - 1;
+
+            if (d == 0)
+            {
+                this.akku = result;
+            }
+            else
+            {
+                this.memoryBank0[f] = result;
+            }
         }
         else
         {
-            this.memoryBank0[f] = result;
-        }
+            result = this.memoryBank1[f] - 1;
 
+            if (d == 0)
+            {
+                this.akku = result;
+            }
+            else
+            {
+                this.memoryBank1[f] = result;
+            }
+        }
         if (result == 0)
         {
             changeStatusReg(zFlag, 1);
@@ -290,31 +376,63 @@ public class PicCPU
 
     public boolean DECFSZ(int f, int d)
     {
-        int result = this.memoryBank0[f] - 1;
-        if (d != 0)
+        int result;
+        if (this.activeBank == 0)
         {
-            this.memoryBank0[f] = result;
+            result = this.memoryBank0[f] - 1;
+            if (d != 0)
+            {
+                this.memoryBank0[f] = result;
+            }
+            else
+            {
+                this.akku = result;
+            }
+            if (result == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
-            this.akku = result;
-        }
-        if (result == 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
+            result = this.memoryBank1[f] - 1;
+
+            if (d != 0)
+            {
+                this.memoryBank1[f] = result;
+            }
+            else
+            {
+                this.akku = result;
+            }
+            if (result == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
     public boolean INCFSZ(int f, int d)
     {
-        int result = this.memoryBank0[f] + 1;
+        int [] currentBank;
+        
+        if(this.activeBank ==  0)
+         currentBank = memoryBank0;
+        else
+            currentBank = memoryBank1;
+        
+        int result = currentBank[f] + 1;
         if (d != 0)
         {
-            this.memoryBank0[f] = result;
+            currentBank[f] = result;
         }
         else
         {
@@ -322,13 +440,20 @@ public class PicCPU
         }
         if (result == 0)
         {
+            if(this.activeBank ==  0)
+                memoryBank0 = currentBank;
+            else
+                memoryBank1 = currentBank;
             return true;
         }
         else
         {
+            if(this.activeBank ==  0)
+                memoryBank0 = currentBank;
+            else
+                memoryBank1 = currentBank;
             return false;
         }
-
     }
 
     public void IORWF(int f, int d)
@@ -416,100 +541,100 @@ public class PicCPU
     public void BCF(int f, int b)
     {
         int mask;
-         
+
         //Bitmaske aus der Zahl b erzeugen
-        switch(b)
+        switch (b)
         {
             case 0:
-               mask = 1;
-               break;
+                mask = 1;
+                break;
             case 1:
-               mask = 2;
-               break;
+                mask = 2;
+                break;
             case 2:
-               mask = 4;
-               break;
+                mask = 4;
+                break;
             case 3:
-               mask = 8;
-               break;
+                mask = 8;
+                break;
             case 4:
-               mask = 16;
-               break;
+                mask = 16;
+                break;
             case 5:
-               mask = 32;
-               break;
+                mask = 32;
+                break;
             case 6:
-               mask = 64;
-               break;
+                mask = 64;
+                break;
             case 7:
-               mask = 128;
-               break;
+                mask = 128;
+                break;
             default:
                 System.err.println("Error beim setzen des Bits!");
-            return;            
+                return;
         }
-        
+
         //Prüft ob Bit vorher schon geCleared ist.
-        if((f & mask) > 0)
+        if ((f & mask) > 0)
         {
             //je nachdem welche Bank aktiv ist
-            if(this.activeBank == 0)
+            if (this.activeBank == 0)
                 memoryBank0[f] = memoryBank0[f] ^ mask; //Xor mit bitmaske
             else
                 memoryBank1[f] = memoryBank1[f] ^ mask; //Xor mit bitmaske
         }
 
-        if(f == 3)
-            statusReg[b]=0;
+        if (f == 3)
+            statusReg[b] = 0;
     }
 
-   public void BSF(int f, int b)
+    public void BSF(int f, int b)
     {
         int mask;
-         
+
         //Bitmaske aus der Zahl b erzeugen
-        switch(b)
+        switch (b)
         {
             case 0:
-               mask = 1;
-               break;
+                mask = 1;
+                break;
             case 1:
-               mask = 2;
-               break;
+                mask = 2;
+                break;
             case 2:
-               mask = 4;
-               break;
+                mask = 4;
+                break;
             case 3:
-               mask = 8;
-               break;
+                mask = 8;
+                break;
             case 4:
-               mask = 16;
-               break;
+                mask = 16;
+                break;
             case 5:
-               mask = 32;
-               break;
+                mask = 32;
+                break;
             case 6:
-               mask = 64;
-               break;
+                mask = 64;
+                break;
             case 7:
-               mask = 128;
-               break;
+                mask = 128;
+                break;
             default:
                 System.err.println("Error beim setzen des Bits!");
-            return;            
+                return;
         }
-        
+
         //Prüft ob Bit vorher schon geCleared ist.
-        if(!((f & mask) > 0))
+        if (!((f & mask) > 0))
         {
             //je nachdem welche Bank aktiv ist
-            if(this.activeBank == 0)
+            if (this.activeBank == 0)
                 memoryBank0[f] = memoryBank0[f] ^ mask; //Xor mit bitmaske
             else
                 memoryBank1[f] = memoryBank1[f] ^ mask; //Xor mit bitmaske
         }
 
-        if(f == status)
-            statusReg[b]=1;
+        if (f == status)
+            statusReg[b] = 1;
     }
 }
