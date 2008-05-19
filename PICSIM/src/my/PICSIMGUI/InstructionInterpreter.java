@@ -18,9 +18,6 @@ public class InstructionInterpreter implements Runnable
         {
             if (gui.running == true)
             {
-                //pic.printW();
-                //pic.printPortA();
-
                 int ret = translateCodeLine(i);
                 if (ret != -2 && ret != -1)
                 {
@@ -129,8 +126,8 @@ public class InstructionInterpreter implements Runnable
     int translateCodeLine(int line)
     {
         /**
-         * Aktueller Befehl mit Oppcode Bitweise verundet, wenn hinterher der
-         * Oppcode wieder rauskommt, ist das der befehl der inter dem oppcode steckt
+         * Befehle liegen zwischen einem bestimmten wert
+         * 
          */
         if (instructions[line] >= 128 && instructions[line] <= 255)
         {
@@ -446,7 +443,7 @@ public class InstructionInterpreter implements Runnable
     {
         for (long x : this.instructions)
         {
-            System.out.println(x);
+            System.out.println(x + "njeee");
         }
     }
 
