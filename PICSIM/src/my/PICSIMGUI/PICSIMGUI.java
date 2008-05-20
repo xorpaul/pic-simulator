@@ -20,17 +20,17 @@ import javax.swing.table.DefaultTableModel;
 public class PICSIMGUI extends javax.swing.JFrame implements Runnable
 {
 
-    public PicCPU pic = new PicCPU();
-    public boolean interpreterSlow;
-    public boolean running = false;
-    public boolean step = false;
-    public int format = 0; // o für DEZ, 1 für HEX, 2 für BIN
-    String[][] contentBank0 = new String[128][2];
-    String[][] contentBank1 = new String[128][2];
-    String[] titel = new String[2];
-    DefaultTableModel dm0;
-    DefaultTableModel dm1;
-    InstructionInterpreter interpret;
+    public PicCPU pic = new PicCPU(); //PIC Prozessor
+    public InstructionInterpreter interpret; //Interpreter
+    public boolean interpreterSlow; // Speed-Flag
+    public boolean running = false; // Start/Stop Flag
+    public boolean step = false; //für schrit für schritt ausführung --> TODO!
+    private int format = 0; // 0 für DEZ, 1 für HEX, 2 für BIN
+    private String[][] contentBank0 = new String[128][2]; // Daten für Bank0 Tabelle
+    private String[][] contentBank1 = new String[128][2]; // Daten für Bank1 Tabelle
+    private String[] titel = new String[2]; //Überschrift der SpeicherTabelle
+    private DefaultTableModel dm0; //TabelModel für Bank0
+    private DefaultTableModel dm1; //TableModel für Bank1
 
     public void run()
     {
@@ -47,14 +47,9 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         titel[0] = "Adresse";
         titel[1] = "Value";
 
-//        for (int i = 0; i < 128; i++)
-//        {
-//                contentBank0[i][0] = "Register " + i;
-//                contentBank0[i][1] = String.valueOf(pic.memoryBank0[i]);
-//                contentBank1[i][0] = "Register " + (i + 128);
-//                contentBank1[i][1] = String.valueOf(pic.memoryBank1[i]);
-//        }
-
+        //Einmalig die Register mit speziellen Namen initilisieren
+        // Wird nie mehr überschrieban, auch nicht von RefreshTables
+        
         contentBank0[0][0] = "Register " + String.valueOf(pic.memoryBank0[4]);
         contentBank0[1][0] = "TMR0";
         contentBank0[2][0] = "PCL";
@@ -85,6 +80,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         TableBank0.setModel(dm0);
         TableBank1.setModel(dm1);
 
+        //Um die übrigen Zellen der Tabellen zu füllen
         refreshTables();
 
         ButtonStop.setEnabled(false);
@@ -462,6 +458,10 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         this.LabelStatus.setText(text);
     }
 
+    /**
+     * Refresht die Memory Daten und ändert das anzeigeformat.
+     * Das ganze wird über das DefaultTableModel gesteuert
+     */
     public void refreshTables()
     {
         switch (format)
@@ -483,10 +483,6 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
                 // Adresse 0 bzw 80hex nach FSR Register setzen
                 dm0.setValueAt("Register " + Integer.toHexString(pic.memoryBank0[4]).toUpperCase(), 0, 0);
                 dm1.setValueAt("Register " + Integer.toHexString(pic.memoryBank1[4]).toUpperCase(), 0, 0);
-
-                //TableModel aktualisieren
-                TableBank0.setModel(dm0);
-                TableBank1.setModel(dm1);
                 break;
 
             case (2)://BIN
@@ -494,21 +490,17 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
                 {
                     if (i != 1 && i != 2 && i != 3 && i != 4 && i != 5 && i != 6 && i != 8 && i != 9 && i != 10 && i != 11)
                     {
-                        // Linke Spalte mit Hex-Adressen Füllen, außer die Zeilen mit speziellem namen
+                        // Linke Spalte mit BIN-Adressen Füllen, außer die Zeilen mit speziellem namen
                         dm0.setValueAt("Register " + Integer.toBinaryString(i), i, 0);
                         dm1.setValueAt("Register " + Integer.toBinaryString(i + 128), i, 0);
                     }
-                    //Rechte Spalte mit Memory-Hex werten füllen, Alle Zeilen
+                    //Rechte Spalte mit Memory-BIN werten füllen, Alle Zeilen
                     dm0.setValueAt(Integer.toBinaryString(pic.memoryBank0[i]), i, 1);
                     dm1.setValueAt(Integer.toBinaryString(pic.memoryBank1[i]), i, 1);
                 }
                 // Adresse 0 bzw 80hex nach FSR Register setzen
                 dm0.setValueAt("Register " + Integer.toBinaryString(pic.memoryBank0[4]), 0, 0);
                 dm1.setValueAt("Register " + Integer.toBinaryString(pic.memoryBank1[4]), 0, 0);
-
-                //TableModel aktualisieren
-                TableBank0.setModel(dm0);
-                TableBank1.setModel(dm1);
                 break;
 
             default:// DEZ
@@ -524,11 +516,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
                 }
                 dm0.setValueAt("Register " + pic.memoryBank0[4], 0, 0);
                 dm1.setValueAt("Register " + pic.memoryBank1[4], 0, 0);
-
-                TableBank0.setModel(dm0);
-                TableBank1.setModel(dm1);
                 break;
         }
+        //TableModel setzen
+        TableBank0.setModel(dm0);
+        TableBank1.setModel(dm1);
 
     }
 
