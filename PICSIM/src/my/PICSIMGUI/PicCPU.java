@@ -31,6 +31,7 @@ public class PicCPU {
     public int nPD = 1; //Negiertes Power Down Status Bit
     public int nTO = 1; //Negiertes Time Out Status Bit
     public int Laufzeit = 0; //Variable der Laufzeit
+    public boolean interrupt = false;
 
     /**
      * @category Konsruktor. Speicher initilisieren
@@ -176,11 +177,9 @@ public class PicCPU {
                             }
 
                             this.CallCount.push(linie);
-
-                            // Stack[Stack_Counter] = Reg[PC];
-                            //Set_Stack(1);
+                            this.interrupt = true;
                             Laufzeit++;
-                            //Reg[PC] = 4 - 1;
+                            this.linie = 4;
                             e("Interner Interrupt ausgelöst");
                         }
                     }
@@ -200,9 +199,9 @@ public class PicCPU {
                         }
                         //Stack[Stack_Counter] = Reg[PC];
                         this.CallCount.push(linie);
-                        Set_Stack(1);
+                        this.interrupt = true;
                         Laufzeit++;
-                        Reg[PC] = 4 - 1;
+                        this.linie = 4;
                         e("int. Interrupt ausgelöst");
                     }
                 }
@@ -233,10 +232,10 @@ public class PicCPU {
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                                 }
-                                Stack[Stack_Counter] = Reg[PC];
-                                Set_Stack(1);
+                                this.CallCount.push(linie);
+                                this.interrupt = true;
                                 Laufzeit++;
-                                Reg[PC] = 4 - 1;
+                                this.linie = 4;
                                 e("int. Interrupt ausgelöst");
                             }
                         }
@@ -257,10 +256,10 @@ public class PicCPU {
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                                 }
-                                Stack[Stack_Counter] = Reg[PC];
-                                Set_Stack(1);
+                                this.CallCount.push(linie);
+                                this.interrupt = true;
                                 Laufzeit++;
-                                Reg[PC] = 4 - 1;
+                                this.linie = 4;
                                 e("int. Interrupt ausgelöst");
                             }
                         }
@@ -291,10 +290,10 @@ public class PicCPU {
                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                 }
-                Stack[Stack_Counter] = Reg[PC];
-                Set_Stack(1);
+                this.CallCount.push(linie);
+                this.interrupt = true;
                 Laufzeit++;
-                Reg[PC] = 4 - 1;
+                this.linie = 4;
                 e("ext. Interrupt ausgelöst");
             }
             Bflanke = Convert.ToInt32(Get_BInt());
@@ -1106,7 +1105,7 @@ public class PicCPU {
 
     public void SLEEP(int f, int b) {
         this.WDT = 0;
-        this.WDTpre++;
+        this.prescaler++;
     }
 
     public void SUBWF(int f, int d) {

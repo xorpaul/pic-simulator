@@ -12,7 +12,13 @@ public class InstructionInterpreter implements Runnable {
     public void run() {
 
         for (int i = 0; i <= (input.length - 1); i++) {
+
+
+
             if (gui.running == true) {
+
+                pic.linie = i;
+
                 int ret = translateCodeLine(i);
                 if (ret != -2 && ret != -1) {
                     i = ret;
@@ -27,10 +33,12 @@ public class InstructionInterpreter implements Runnable {
                     pic.setBank();
                     pic.fsrMemoryManagement();
                     pic.statusToMemory();
-                    pic.linie = i;
+
                     gui.refreshGui();
 
-
+                    if (pic.interrupt) {
+                        i = pic.linie;
+                    } //Wenn sich aufgrund von Interupts was geändert hat
 
 
                     if (gui.interpreterSlow) {
@@ -42,6 +50,9 @@ public class InstructionInterpreter implements Runnable {
                     gui.readGui();
                 //Read muss nach dem sleep erfolgen, da die 
                 //eingabe sonst überlesen wird
+
+
+
                 } catch (InterruptedException ie) {
                     System.err.println("InteruptedExeption -> " + ie.getClass());
                 }
@@ -62,7 +73,7 @@ public class InstructionInterpreter implements Runnable {
         this.input = aInput;
         this.gui = gui;
         this.pic = pic;
-        
+
         int[] newInstructions = new int[input.length + 1];
         int i = 0;
         for (String singleLines : input) {
