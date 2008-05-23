@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
+import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.table.DefaultTableModel;
 
@@ -17,8 +18,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author  Mogli BA, PP
  */
-public class PICSIMGUI extends javax.swing.JFrame implements Runnable
-{
+public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 
     public PicCPU pic = new PicCPU(); //PIC Prozessor
     public InstructionInterpreter interpret; //Interpreter
@@ -32,15 +32,13 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     private DefaultTableModel dm0; //TabelModel für Bank0
     private DefaultTableModel dm1; //TableModel für Bank1
 
-    public void run()
-    {
+    public void run() {
     }
 
     /** Creates new form PICSIMGUI
      * 
      */
-    public PICSIMGUI()
-    {
+    public PICSIMGUI() {
         super("PIC16F84 - SIMULATOR");
         initComponents();
 
@@ -49,7 +47,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
 
         //Einmalig die Register mit speziellen Namen initilisieren
         // Wird nie mehr überschrieban, auch nicht von RefreshTables
-        
+
         contentBank0[0][0] = "Register " + String.valueOf(pic.memoryBank0[4]);
         contentBank0[1][0] = "TMR0";
         contentBank0[2][0] = "PCL";
@@ -86,14 +84,10 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         ButtonStop.setEnabled(false);
     }
 
-    static public void e(Object... parameters)
-    {
-        if (parameters.length == 2)
-        {
+    static public void e(Object... parameters) {
+        if (parameters.length == 2) {
             System.out.print(parameters[0]);
-        }
-        else
-        {
+        } else {
             System.out.print(parameters[0]);
         }
     }
@@ -101,8 +95,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     /**
      * Ruft unterschiedliche Funktionen die einen Teil der GUI refreshen auf.
      */
-    public void refreshGui()
-    {
+    public void refreshGui() {
         pic.statusToMemory();
         this.TextFieldWValue.setText(String.valueOf(pic.akku));
         portStatus();
@@ -117,8 +110,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
      * wie zB RadioButtons der Ports und setzt entsprechend
      * die Attribute im Pic
      */
-    public void readGui()
-    {
+    public void readGui() {
         pic.setPortA(readPortA());
         pic.setPortB(readPortB());
     }
@@ -127,58 +119,64 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
      * setzt die RadioButtons der Flags entsprechend
      * der aktuellen Attribute im Pic
      */
-    public void setFlagRadios()
-    {
-        if (this.pic.statusReg[pic.zFlag] == 1)
+    public void setFlagRadios() {
+        if (this.pic.statusReg[pic.zFlag] == 1) {
             this.RadioButtonZFlag.setSelected(true);
-        else
+        } else {
             this.RadioButtonZFlag.setSelected(false);
+        }
 
-        if (this.pic.statusReg[pic.cFlag] == 1)
+        if (this.pic.statusReg[pic.cFlag] == 1) {
             this.RadioButtonCarryFlag.setSelected(true);
-        else
+        } else {
             this.RadioButtonCarryFlag.setSelected(false);
+        }
 
-        if (this.pic.statusReg[pic.rp0] == 1)
+        if (this.pic.statusReg[pic.rp0] == 1) {
             this.RadioButtonRP0Flag.setSelected(true);
-        else
+        } else {
             this.RadioButtonRP0Flag.setSelected(false);
+        }
     }
 
     /**
      * setzt die RadioButtons von PortA entsprechend
      * der aktuellen Attribute im Pic
      */
-    public void setPortARadios()
-    {
+    public void setPortARadios() {
         int[] port = pic.getPortA();
         int portValue = pic.memoryBank0[pic.portA];
         TextFieldPortAValue.setText(String.valueOf(portValue));
 
-        if (port[0] == 1)
+        if (port[0] == 1) {
             RadioButtonA0.setSelected(true);
-        else
+        } else {
             RadioButtonA0.setSelected(false);
+        }
 
-        if (port[1] == 1)
+        if (port[1] == 1) {
             RadioButtonA1.setSelected(true);
-        else
+        } else {
             RadioButtonA1.setSelected(false);
+        }
 
-        if (port[2] == 1)
+        if (port[2] == 1) {
             RadioButtonA2.setSelected(true);
-        else
+        } else {
             RadioButtonA2.setSelected(false);
+        }
 
-        if (port[3] == 1)
+        if (port[3] == 1) {
             RadioButtonA3.setSelected(true);
-        else
+        } else {
             RadioButtonA3.setSelected(false);
+        }
 
-        if (port[4] == 1)
+        if (port[4] == 1) {
             RadioButtonA4.setSelected(true);
-        else
+        } else {
             RadioButtonA4.setSelected(false);
+        }
 
     //Delete Comment: PortA is nur 5 Bit. Datasheet Seite 19
     }
@@ -187,116 +185,135 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
      * setzt die RadioButtons von PortB entsprechend
      * der aktuellen Attribute im Pic
      */
-    public void setPortBRadios()
-    {
+    public void setPortBRadios() {
         int[] port = pic.getPortB();
         int portValue = pic.memoryBank0[pic.portB];
         TextFieldPortBValue.setText(String.valueOf(portValue));
 
-        if (port[0] == 1)
+        if (port[0] == 1) {
             RadioButtonB0.setSelected(true);
-        else
+        } else {
             RadioButtonB0.setSelected(false);
+        }
 
-        if (port[1] == 1)
+        if (port[1] == 1) {
             RadioButtonB1.setSelected(true);
-        else
+        } else {
             RadioButtonB1.setSelected(false);
+        }
 
-        if (port[2] == 1)
+        if (port[2] == 1) {
             RadioButtonB2.setSelected(true);
-        else
+        } else {
             RadioButtonB2.setSelected(false);
+        }
 
-        if (port[3] == 1)
+        if (port[3] == 1) {
             RadioButtonB3.setSelected(true);
-        else
+        } else {
             RadioButtonB3.setSelected(false);
+        }
 
-        if (port[4] == 1)
+        if (port[4] == 1) {
             RadioButtonB4.setSelected(true);
-        else
+        } else {
             RadioButtonB4.setSelected(false);
+        }
 
-        if (port[5] == 1)
+        if (port[5] == 1) {
             RadioButtonB5.setSelected(true);
-        else
+        } else {
             RadioButtonB5.setSelected(false);
+        }
 
-        if (port[6] == 1)
+        if (port[6] == 1) {
             RadioButtonB6.setSelected(true);
-        else
+        } else {
             RadioButtonB6.setSelected(false);
+        }
 
-        if (port[7] == 1)
+        if (port[7] == 1) {
             RadioButtonB7.setSelected(true);
-        else
+        } else {
             RadioButtonB7.setSelected(false);
+        }
     }
 
     /** Setzt PortA und PortB RadioButtons auf 
      * enabled oder disabled, je nachdem wie die
      * Ports in den TRIS-Registern gesetzt sind.
      */
-    public void portStatus()
-    {
+    public void portStatus() {
         int[] trisA = pic.getTrisA();
         int[] trisB = pic.getTrisB();
 
-        if (trisA[0] == 1)
+        if (trisA[0] == 1) {
             RadioButtonA0.setEnabled(true);
-        else
+        } else {
             RadioButtonA0.setEnabled(false);
-        if (trisA[1] == 1)
+        }
+        if (trisA[1] == 1) {
             RadioButtonA1.setEnabled(true);
-        else
+        } else {
             RadioButtonA1.setEnabled(false);
-        if (trisA[2] == 1)
+        }
+        if (trisA[2] == 1) {
             RadioButtonA2.setEnabled(true);
-        else
+        } else {
             RadioButtonA2.setEnabled(false);
-        if (trisA[3] == 1)
+        }
+        if (trisA[3] == 1) {
             RadioButtonA3.setEnabled(true);
-        else
+        } else {
             RadioButtonA3.setEnabled(false);
-        if (trisA[4] == 1)
+        }
+        if (trisA[4] == 1) {
             RadioButtonA4.setEnabled(true);
-        else
+        } else {
             RadioButtonA4.setEnabled(false);
+        }
 
 
-        if (trisB[0] == 1)
+        if (trisB[0] == 1) {
             RadioButtonB0.setEnabled(true);
-        else
+        } else {
             RadioButtonB0.setEnabled(false);
-        if (trisB[1] == 1)
+        }
+        if (trisB[1] == 1) {
             RadioButtonB1.setEnabled(true);
-        else
+        } else {
             RadioButtonB1.setEnabled(false);
-        if (trisB[2] == 1)
+        }
+        if (trisB[2] == 1) {
             RadioButtonB2.setEnabled(true);
-        else
+        } else {
             RadioButtonB2.setEnabled(false);
-        if (trisB[3] == 1)
+        }
+        if (trisB[3] == 1) {
             RadioButtonB3.setEnabled(true);
-        else
+        } else {
             RadioButtonB3.setEnabled(false);
-        if (trisB[4] == 1)
+        }
+        if (trisB[4] == 1) {
             RadioButtonB4.setEnabled(true);
-        else
+        } else {
             RadioButtonB4.setEnabled(false);
-        if (trisB[5] == 1)
+        }
+        if (trisB[5] == 1) {
             RadioButtonB5.setEnabled(true);
-        else
+        } else {
             RadioButtonB5.setEnabled(false);
-        if (trisB[6] == 1)
+        }
+        if (trisB[6] == 1) {
             RadioButtonB6.setEnabled(true);
-        else
+        } else {
             RadioButtonB6.setEnabled(false);
-        if (trisB[7] == 1)
+        }
+        if (trisB[7] == 1) {
             RadioButtonB7.setEnabled(true);
-        else
+        } else {
             RadioButtonB7.setEnabled(false);
+        }
     }
 
     /**
@@ -304,59 +321,58 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
      * @return 1 für Selected, 0 für nich selektiert
      * -2 wenn der Port nicht eingang sondern ausgang war
      */
-    public int[] readPortA()
-    {
+    public int[] readPortA() {
         int[] portAReadIn = new int[5];
-        if (RadioButtonA0.isEnabled() == true)
-        {
-            if (RadioButtonA0.isSelected() == true)
+        if (RadioButtonA0.isEnabled() == true) {
+            if (RadioButtonA0.isSelected() == true) {
                 portAReadIn[0] = 1;
-            else
+            } else {
                 portAReadIn[0] = 0;
-        }
-        else
+            }
+        } else {
             portAReadIn[0] = -2;
+        }
 
 
-        if (RadioButtonA1.isEnabled() == true)
-        {
-            if (RadioButtonA1.isSelected() == true)
+        if (RadioButtonA1.isEnabled() == true) {
+            if (RadioButtonA1.isSelected() == true) {
                 portAReadIn[1] = 1;
-            else
+            } else {
                 portAReadIn[1] = 0;
-        }
-        else
+            }
+        } else {
             portAReadIn[1] = -2;
+        }
 
-        if (RadioButtonA2.isEnabled() == true)
-        {
-            if (RadioButtonA2.isSelected() == true)
+        if (RadioButtonA2.isEnabled() == true) {
+            if (RadioButtonA2.isSelected() == true) {
                 portAReadIn[2] = 1;
-            else
+            } else {
                 portAReadIn[2] = 0;
-        }
-        else
+            }
+        } else {
             portAReadIn[2] = -2;
+        }
 
-        if (RadioButtonA3.isEnabled() == true)
-        {
-            if (RadioButtonA3.isSelected() == true)
+        if (RadioButtonA3.isEnabled() == true) {
+            if (RadioButtonA3.isSelected() == true) {
                 portAReadIn[3] = 1;
-            else
+            } else {
                 portAReadIn[3] = 0;
-        }
-        else
+            }
+        } else {
             portAReadIn[3] = -2;
-
-        if (RadioButtonA4.isEnabled() == true)
-        {
-            if (RadioButtonA4.isSelected() == true)
-                portAReadIn[4] = 1;
-            else
-                portAReadIn[4] = 0;
         }
-        else
+
+        if (RadioButtonA4.isEnabled() == true) {
+            if (RadioButtonA4.isSelected() == true) {
+                portAReadIn[4] = 1;
+            } else {
+                portAReadIn[4] = 0;
+            }
+        } else {
             portAReadIn[4] = -2;
+        }
 
         return portAReadIn;
     }
@@ -366,95 +382,93 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
      * @return 1 für Selected, 0 für nich selektiert
      * -2 wenn der Port nicht eingang sondern ausgang war
      */
-    public int[] readPortB()
-    {
+    public int[] readPortB() {
         int[] portBReadIn = new int[8];
-        if (RadioButtonB0.isEnabled() == true)
-        {
-            if (RadioButtonB0.isSelected() == true)
+        if (RadioButtonB0.isEnabled() == true) {
+            if (RadioButtonB0.isSelected() == true) {
                 portBReadIn[0] = 1;
-            else
+            } else {
                 portBReadIn[0] = 0;
-        }
-        else
+            }
+        } else {
             portBReadIn[0] = -2;
+        }
 
 
-        if (RadioButtonB1.isEnabled() == true)
-        {
-            if (RadioButtonB1.isSelected() == true)
+        if (RadioButtonB1.isEnabled() == true) {
+            if (RadioButtonB1.isSelected() == true) {
                 portBReadIn[1] = 1;
-            else
+            } else {
                 portBReadIn[1] = 0;
-        }
-        else
+            }
+        } else {
             portBReadIn[1] = -2;
+        }
 
-        if (RadioButtonB2.isEnabled() == true)
-        {
-            if (RadioButtonB2.isSelected() == true)
+        if (RadioButtonB2.isEnabled() == true) {
+            if (RadioButtonB2.isSelected() == true) {
                 portBReadIn[2] = 1;
-            else
+            } else {
                 portBReadIn[2] = 0;
-        }
-        else
+            }
+        } else {
             portBReadIn[2] = -2;
+        }
 
-        if (RadioButtonB3.isEnabled() == true)
-        {
-            if (RadioButtonB3.isSelected() == true)
+        if (RadioButtonB3.isEnabled() == true) {
+            if (RadioButtonB3.isSelected() == true) {
                 portBReadIn[3] = 1;
-            else
+            } else {
                 portBReadIn[3] = 0;
-        }
-        else
+            }
+        } else {
             portBReadIn[3] = -2;
+        }
 
-        if (RadioButtonB4.isEnabled() == true)
-        {
-            if (RadioButtonB4.isSelected() == true)
+        if (RadioButtonB4.isEnabled() == true) {
+            if (RadioButtonB4.isSelected() == true) {
                 portBReadIn[4] = 1;
-            else
+            } else {
                 portBReadIn[4] = 0;
-        }
-        else
+            }
+        } else {
             portBReadIn[4] = -2;
+        }
 
-        if (RadioButtonB5.isEnabled() == true)
-        {
-            if (RadioButtonB5.isSelected() == true)
+        if (RadioButtonB5.isEnabled() == true) {
+            if (RadioButtonB5.isSelected() == true) {
                 portBReadIn[5] = 1;
-            else
+            } else {
                 portBReadIn[5] = 0;
-        }
-        else
+            }
+        } else {
             portBReadIn[5] = -2;
+        }
 
-        if (RadioButtonB6.isEnabled() == true)
-        {
-            if (RadioButtonB6.isSelected() == true)
+        if (RadioButtonB6.isEnabled() == true) {
+            if (RadioButtonB6.isSelected() == true) {
                 portBReadIn[6] = 1;
-            else
+            } else {
                 portBReadIn[6] = 0;
-        }
-        else
+            }
+        } else {
             portBReadIn[6] = -2;
-
-        if (RadioButtonB7.isEnabled() == true)
-        {
-            if (RadioButtonB7.isSelected() == true)
-                portBReadIn[7] = 1;
-            else
-                portBReadIn[7] = 0;
         }
-        else
+
+        if (RadioButtonB7.isEnabled() == true) {
+            if (RadioButtonB7.isSelected() == true) {
+                portBReadIn[7] = 1;
+            } else {
+                portBReadIn[7] = 0;
+            }
+        } else {
             portBReadIn[7] = -2;
+        }
 
         return portBReadIn;
     }
 
-    public void setStatusLabel(String text)
-    {
+    public void setStatusLabel(String text) {
         this.LabelStatus.setText(text);
     }
 
@@ -462,16 +476,12 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
      * Refresht die Memory Daten und ändert das anzeigeformat.
      * Das ganze wird über das DefaultTableModel gesteuert
      */
-    public void refreshTables()
-    {
-        switch (format)
-        {
+    public void refreshTables() {
+        switch (format) {
 
             case (1)://HEX
-                for (int i = 0; i < 128; i++)
-                {
-                    if (i != 1 && i != 2 && i != 3 && i != 4 && i != 5 && i != 6 && i != 8 && i != 9 && i != 10 && i != 11)
-                    {
+                for (int i = 0; i < 128; i++) {
+                    if (i != 1 && i != 2 && i != 3 && i != 4 && i != 5 && i != 6 && i != 8 && i != 9 && i != 10 && i != 11) {
                         // Linke Spalte mit Hex-Adressen Füllen, außer die Zeilen mit speziellem namen
                         dm0.setValueAt("Register " + Integer.toHexString(i).toUpperCase(), i, 0);
                         dm1.setValueAt("Register " + Integer.toHexString(i + 128).toUpperCase(), i, 0);
@@ -486,10 +496,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
                 break;
 
             case (2)://BIN
-                for (int i = 0; i < 128; i++)
-                {
-                    if (i != 1 && i != 2 && i != 3 && i != 4 && i != 5 && i != 6 && i != 8 && i != 9 && i != 10 && i != 11)
-                    {
+                for (int i = 0; i < 128; i++) {
+                    if (i != 1 && i != 2 && i != 3 && i != 4 && i != 5 && i != 6 && i != 8 && i != 9 && i != 10 && i != 11) {
                         // Linke Spalte mit BIN-Adressen Füllen, außer die Zeilen mit speziellem namen
                         dm0.setValueAt("Register " + Integer.toBinaryString(i), i, 0);
                         dm1.setValueAt("Register " + Integer.toBinaryString(i + 128), i, 0);
@@ -504,10 +512,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
                 break;
 
             default:// DEZ
-                for (int i = 0; i < 128; i++)
-                {
-                    if (i != 1 && i != 2 && i != 3 && i != 4 && i != 5 && i != 6 && i != 8 && i != 9 && i != 10 && i != 11)
-                    {
+                for (int i = 0; i < 128; i++) {
+                    if (i != 1 && i != 2 && i != 3 && i != 4 && i != 5 && i != 6 && i != 8 && i != 9 && i != 10 && i != 11) {
                         dm0.setValueAt("Register " + i, i, 0);
                         dm1.setValueAt("Register " + (i + 128), i, 0);
                     }
@@ -533,8 +539,6 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     private void initComponents() {
 
         ButtonRun = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
         LabelStatus = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         PanelFlags = new javax.swing.JPanel();
@@ -573,6 +577,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         CheckBoxSloMo = new javax.swing.JCheckBox();
         ButtonStop = new javax.swing.JButton();
         ComboBoxChangeFormat = new javax.swing.JComboBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -588,11 +594,6 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
                 ButtonRunMousePressed(evt);
             }
         });
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setText("0000 2817           00019           goto main           ;Unterprogramme überspringen\n0001 3010           00023           movlw 16            ;Schleifenzähler\n0002 008C           00024           movwf count\n0003 3010           00025           movlw 10h           ;Startzeiger initialisieren\n0004 0084           00026           movwf fsr           ;Zeiger ins FSR\n0005 0100           00027           clrw\n0006 0080           00029           movwf indirect      ;Wert indirekt abspeichern\n0007 0A84           00030           incf fsr            ;Zeiger erhöhen\n0008 3E01           00031           addlw 1             ;W-Register erhöhen (es gibt kein INC W\n0009 0B8C           00032           decfsz count        ;Schleifenzähler erniedrigen\n000A 2806           00033           goto loop1          ;wiederholen bis F08 auf 0 ist\n000B 3400           00034           retlw 0\n000C 3010           00038           movlw 10h           ;Schleifenzähler initialisieren\n000D 008C           00039           movwf count\n000E 0084           00040           movwf fsr           ;Startzeiger initialsieren\n000F 0100           00041           clrw                ;Summenregister löschen\n0010 0700           00043           addwf indirect,w    ;Speicherinhalt zu W addieren\n0011 0A84           00044           incf fsr\n0012 0B8C           00045           decfsz count\n0013 2810           00046           goto loop2\n0014 008F           00047           movwf 0fh           ;Ergebnis abspeichern\n0015 098F           00048           comf 0fh            ;Komplement bilden\n0016 3400           00049           retlw 0             ;Unterprogrammende   \n0017 303F           00052           movlw 3fh           ;zuerst den Vorteiler vom RTCC trennen\n0018 1683           00053           bsf status,5        ;ins Option-Register schreiben\n0019 0081           00054           movwf 1             ;=freg 81h\n001A 1283           00055           bcf status,5        ;zurück auf Bank0\n001B 0100           00056           clrw                ;RTCC-Register löschen\n001C 0081           00057           movwf 1h\n001D 2001           00058           call fillinc        ;Speicherbereich füllen\n001E 200C           00059           call qsumme         ;Quersumme berechnen\n001F 090F           00060           comf 0fh,w          ;Ergebnis holen\n0020 020F           00061           subwf 0fh,w         ;vom Orginalwert abziehen\n0021 008E           00062           movwf 0eh           ;neues Ergebnis abspeichern.\n0022 3010           00063           movlw 10h             \n0023 1683           00064           bsf status,5        ;auf Bank 1 umschalten\n0024 0085           00065           movwf 5             ;=freg 85H  Port A 0-3 auf Ausgang\n0025 1283           00066           bcf status,5        ;zurück auf Bank 0\n0026 0085           00067           movwf ra            ;Signale auf Low  \n0027 1806           00069           btfsc rb,0\n0028 2827           00070           goto main1          ;warten bis RB0 auf 0   \n0029 1C06           00072           btfss rb,0\n002A 2829           00073           goto main2          ;warten bis rb0 wieder 1         \n002B 3020           00074           movlw 20h           ;Option neu setzen, VT=1:2\n002C 1683           00075           bsf status,5        ;Bank 1\n002D 0081           00076           movwf 1             ;hier liegt Option\n002E 1283           00077           bcf status,5        ;wieder Bank 0    \n002F 282F           00081           goto ende           ;Endlosschleife, verhindert Nirwana");
-        jScrollPane1.setViewportView(jTextArea1);
 
         jLabel1.setText("LAST INSTRUCTION: ");
 
@@ -913,6 +914,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
             }
         });
 
+        jScrollPane1.setViewportView(jList1);
+
         jMenu1.setText("File");
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
@@ -938,22 +941,20 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(LabelStatus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(PanelPorts, javax.swing.GroupLayout.PREFERRED_SIZE, 451, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(PanelFlags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 620, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(LabelStatus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PanelPorts, javax.swing.GroupLayout.PREFERRED_SIZE, 451, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PanelFlags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(ButtonRun)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ButtonStop)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(CheckBoxSloMo)))
+                        .addComponent(CheckBoxSloMo))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
@@ -965,22 +966,23 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(ComboBoxChangeFormat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ButtonRun)
                             .addComponent(ButtonStop)
-                            .addComponent(CheckBoxSloMo))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 488, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CheckBoxSloMo))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(PanelFlags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(PanelPorts, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(ComboBoxChangeFormat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(LabelStatus)
@@ -1004,32 +1006,43 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
         returnVal =
                 chooser.showOpenDialog((Component) evt.getSource());
 
-        if (returnVal == chooser.APPROVE_OPTION)
-        {
+        if (returnVal == chooser.APPROVE_OPTION) {
             /* To create a URL for a file on the local file-system, we simply
              * pre-pend the "file" protocol to the absolute path of the file.
              */
             fileURL = chooser.getSelectedFile().getAbsolutePath();
         }
 
-        String record = null;
 
-        try
-        {
-            jTextArea1.setText("");
+
+        try {
+            //jTextArea1.setText("");
+
+            int c = 0;
+
+            String record = null;
+            String[] Code = new String[65536];
+
+            jList1.removeAll();
             FileReader fr = new FileReader(fileURL);
             BufferedReader br = new BufferedReader(fr);
 
-            record =
-                    new String();
-            while ((record = br.readLine()) != null)
-            {
-                jTextArea1.append(record + "\n");
+            record = new String();
+            while ((record = br.readLine()) != null) {
+                // jTextArea1.append(record + "\n");
+                Vector<Object> vector = new Vector<Object>();
+                // alle vorhandene Elemente einfügen
+                for (int i = 0; i < jList1.getModel().getSize(); i++) {
+                    vector.add(jList1.getModel().getElementAt(i));
+                }
+                Code[c] = record;
+                // den eigenen Text eingeben
+                vector.add(record + "\n");
+                jList1.setListData(vector);
+                c++;
             }
-
-        }
-        catch (IOException e)
-        {
+            interpret = new InstructionInterpreter(Code, this, this.pic);
+        } catch (IOException e) {
             // catch possible io errors from readLine()
             System.out.println("Uh oh, got an IOException error!");
             e.printStackTrace();
@@ -1043,13 +1056,23 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
      */
     private void ButtonRunMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonRunMousePressed
 
-        String[] Code = jTextArea1.getText().split("\n");
-        interpret = new InstructionInterpreter(Code, this, this.pic);
+        //  String[] Code = jTextArea1.getText().split("\n");
 
-        if (this.CheckBoxSloMo.isSelected())
+        /* int i = 0;
+        int iSize = jList1.getModel().getSize();
+        //  e(iSize);
+        String[] Code = null;
+        for (i = 0; i < iSize; i++) {
+        Code[i] = jList1.getModel().getElementAt(i).toString();
+        //e(Code[i]);
+        }
+        interpret = new InstructionInterpreter(Code, this, this.pic);
+         */
+        if (this.CheckBoxSloMo.isSelected()) {
             this.interpreterSlow = true;
-        else
+        } else {
             this.interpreterSlow = false;
+        }
 
         ButtonStop.setEnabled(true);
         ButtonRun.setEnabled(false);
@@ -1060,10 +1083,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     }//GEN-LAST:event_ButtonRunMousePressed
 
     private void CheckBoxSloMoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CheckBoxSloMoActionPerformed
-        if (this.CheckBoxSloMo.isSelected())
+        if (this.CheckBoxSloMo.isSelected()) {
             this.interpreterSlow = true;
-        else
+        } else {
             this.interpreterSlow = false;
+        }
            
     }//GEN-LAST:event_CheckBoxSloMoActionPerformed
 
@@ -1074,28 +1098,24 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     }//GEN-LAST:event_ButtonStopMousePressed
 
     private void ComboBoxChangeFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboBoxChangeFormatActionPerformed
-        if(ComboBoxChangeFormat.getSelectedItem().equals("DEZ"))
+        if (ComboBoxChangeFormat.getSelectedItem().equals("DEZ")) {
             this.format = 0;
-        else if (ComboBoxChangeFormat.getSelectedItem().equals("HEX"))
+        } else if (ComboBoxChangeFormat.getSelectedItem().equals("HEX")) {
             this.format = 1;
-        else if (ComboBoxChangeFormat.getSelectedItem().equals("BIN"))
+        } else if (ComboBoxChangeFormat.getSelectedItem().equals("BIN")) {
             this.format = 2;
-        
+        }
+
         refreshTables();
     }//GEN-LAST:event_ComboBoxChangeFormatActionPerformed
 
-
-    
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[])
-    {
-        java.awt.EventQueue.invokeLater(new Runnable()
-        {
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
 
-            public void run()
-            {
+            public void run() {
                 new PICSIMGUI().setVisible(true);
             }
         });
@@ -1137,6 +1157,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JList jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -1145,6 +1166,5 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }
