@@ -78,7 +78,7 @@ public class InstructionInterpreter implements Runnable {
         int[] newInstructions = new int[input.length + 1];
         int i = 0;
         for (String singleLines : input) {
-            // e(this.input[i]);
+            e("Das steht in dem Array input an stelle [" + i + "]: " + this.input[i] + "\n");
             String singleLinesTrimmed = singleLines.trim();
 
             if (singleLinesTrimmed.matches("")) {
@@ -92,6 +92,8 @@ public class InstructionInterpreter implements Runnable {
 
             newInstructions[adresseInt] = instructionInt;
 
+            i++;
+            
         }
         this.instructions = newInstructions;
     }
