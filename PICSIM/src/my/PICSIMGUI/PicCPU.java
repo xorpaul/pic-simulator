@@ -32,6 +32,8 @@ public class PicCPU {
     public int nTO = 1; //Negiertes Time Out Status Bit
     public int Laufzeit = 0; //Variable der Laufzeit
     public boolean interrupt = false;
+    public boolean Aflanke = false;
+    public boolean Bflanke = false;
 
     /**
      * @category Konsruktor. Speicher initilisieren
@@ -150,7 +152,11 @@ public class PicCPU {
         }
     }
 
-    private void interrupt() { // Kontrolliert, ob ein Interrupt aufgetreten ist
+    public void Reset_WDT() {
+        e("Programm wird aufgrund von WDT resetet!");
+    }
+
+    public void interrupt() { // Kontrolliert, ob ein Interrupt aufgetreten ist
         //interner Interrupt
 
         if (!Get_PSA()) { // TMR0 wird benutzt, daher kann der WDT hochzählen
@@ -217,7 +223,7 @@ public class PicCPU {
         } else { // Ich bin ein Counter, ich brauche eine Flanke
             if (!Get_PSA()) // Ich bin auf RTM0
             {
-                if ((Get_AInt() != (Aflanke == 1)) && (Get_AInt() != Get_T0SE())) { // Flanke war da und gültige Flanke war da
+                if ((Get_AInt() != (Aflanke == true)) && (Get_AInt() != Get_T0SE())) { // Flanke war da und gültige Flanke war da
                     if ((Get_GIE()) && (Get_T0IE())) { // Ich darf starten
                         prescaler++;
                         if (prescaler >= getprescaler(true)) { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
@@ -243,7 +249,7 @@ public class PicCPU {
                 }
             } else { // Ich bin auf WDT, daher TMR0 sofort erhöhen
                 prescaler++;
-                if ((Get_AInt() != (Aflanke == 1)) && (Get_AInt() != Get_T0SE())) { // Flanke war da und gültige Flanke war da
+                if ((Get_AInt() != (Aflanke == true)) && (Get_AInt() != Get_T0SE())) { // Flanke war da und gültige Flanke war da
                     if ((Get_GIE()) && (Get_T0IE())) { // Ich darf starten
                         if (prescaler >= getprescaler(true)) { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
                             this.memoryBank0[TMR0]++;
@@ -273,7 +279,7 @@ public class PicCPU {
                     }
                 }
             }
-            Aflanke = Convert.ToInt32(Get_AInt());
+            Aflanke = Get_AInt();
         }
 
 
@@ -282,7 +288,7 @@ public class PicCPU {
         //externer Interrupt
 
         if ((Get_GIE()) && (Get_INTE())) { // Ich darf starten
-            if ((Get_BInt() != (Bflanke == 1)) && (Get_BInt() == Get_INTEDG())) { // Flanke da und gültige Flanke war da -> Interrupt
+            if ((Get_BInt() != (Bflanke == true)) && (Get_BInt() == Get_INTEDG())) { // Flanke da und gültige Flanke war da -> Interrupt
                 if (activeBank == 0) {
                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] | 4);
                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] & 127);
@@ -296,7 +302,7 @@ public class PicCPU {
                 this.linie = 4;
                 e("ext. Interrupt ausgelöst");
             }
-            Bflanke = Convert.ToInt32(Get_BInt());
+            Bflanke = Get_BInt();
         }
 
 
