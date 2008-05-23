@@ -75,9 +75,10 @@ public class InstructionInterpreter implements Runnable {
         this.gui = gui;
         this.pic = pic;
 
-        int[] newInstructions = new int[input.length + 1];
+        int[] newInstructions = new int[input.length +1];
         int i = 0;
         for (String singleLines : input) {
+                
             e("Das steht in dem Array input an stelle [" + i + "]: " + this.input[i] + "\n");
             String singleLinesTrimmed = singleLines.trim();
 
@@ -358,11 +359,11 @@ public class InstructionInterpreter implements Runnable {
             try {
                 returnTo = pic.CallCount.pop();
             } catch (EmptyStackException e) {
-                System.err.println("Call Stack ist leer!");
+                System.err.println(line + " ist befehl return. Sprungadresse:  ERROR\nCall Stack ist leer!");
                 return -1;
             }
             gui.setStatusLabel("RETURN ");
-            System.out.println(line + " ist befehl return. Sprungadresse: " + (returnTo + 1));
+            System.out.println(line + " ist befehl return. Sprungadresse: " + (returnTo));
             return returnTo; /*Rücksprungadresse*/
         } else if (instructions[line] == 99) {
             gui.setStatusLabel("SLEEP");

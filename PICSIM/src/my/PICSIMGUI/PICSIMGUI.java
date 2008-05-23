@@ -1021,13 +1021,23 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
             int c = 0;
 
             String record = null;
-            String[] Code = new String[65536];
-
+            int lineCount = 0;
+            String[] Code;
+          
             jList1.removeAll();
             FileReader fr = new FileReader(fileURL);
             BufferedReader br = new BufferedReader(fr);
+            //Zweiter Bufferd Reader nit dem selben file
+            //benötigt um die anzahl der zeilen rauszufinden
+            BufferedReader br2 = new BufferedReader(new FileReader(fileURL));
 
-            record = new String();
+            //Anzahl der Zeilen der JList rausfinden
+            while(br2.readLine() != null)
+            {lineCount++;}
+            //System.err.println(lineCount);
+            
+            Code = new String[lineCount];
+            record = new String(); 
             while ((record = br.readLine()) != null) {
                 // jTextArea1.append(record + "\n");
                 Vector<Object> vector = new Vector<Object>();
