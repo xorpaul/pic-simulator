@@ -39,6 +39,7 @@ public class InstructionInterpreter implements Runnable {
 
                     if (pic.interrupt) {
                         i = pic.linie;
+                        pic.interrupt = false;
                     } //Wenn sich aufgrund von Interupts was geändert hat
 
 
@@ -75,11 +76,11 @@ public class InstructionInterpreter implements Runnable {
         this.gui = gui;
         this.pic = pic;
 
-        int[] newInstructions = new int[input.length +1];
-        int i = 0;
+        int[] newInstructions = new int[input.length + 1];
+        // int i = 0;
         for (String singleLines : input) {
-                
-            e("Das steht in dem Array input an stelle [" + i + "]: " + this.input[i] + "\n");
+
+            // e("Das steht in dem Array input an stelle [" + i + "]: " + this.input[i] + "\n");
             String singleLinesTrimmed = singleLines.trim();
 
             if (singleLinesTrimmed.matches("")) {
@@ -93,8 +94,8 @@ public class InstructionInterpreter implements Runnable {
 
             newInstructions[adresseInt] = instructionInt;
 
-            i++;
-            
+        //i++;
+
         }
         this.instructions = newInstructions;
     }
@@ -187,7 +188,7 @@ public class InstructionInterpreter implements Runnable {
             return -2;
         } else if (instructions[line] >= 2304 && instructions[line] <= 2559) {
             int d = instructions[line] & 128;
-            int f = instructions[line] & 172;
+            int f = instructions[line] & 127;
             gui.setStatusLabel("COMF " + f + "," + d);
             System.out.println(line + " ist befehl comf, f ist " + f + " d ist " + d);
             pic.COMF(f, d);
@@ -368,7 +369,7 @@ public class InstructionInterpreter implements Runnable {
         } else if (instructions[line] == 99) {
             gui.setStatusLabel("SLEEP");
             System.out.println(line + " ist befehl sleep");
-            pic.SLEEP(line, line);
+            pic.SLEEP();
             return -2;
         } else if (instructions[line] >= 10240 && instructions[line] <= 12287) {
             int k = instructions[line] & 2047;

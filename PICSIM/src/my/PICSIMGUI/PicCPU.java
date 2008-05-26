@@ -1,5 +1,6 @@
 package my.PICSIMGUI;
 
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 public class PicCPU {
@@ -15,9 +16,13 @@ public class PicCPU {
     public final int status = 3;//Adresse des StatusRegisters
     public final int zFlag = 2; //Bit# des zFLAG im Statusregister
     public final int cFlag = 0; //Bit# des CarryFLAG im Statusregister
+    public final int nPD = 3; // Negiertes Power Down Status Bit
+    public final int nTO = 4; // Negiertes Time Out Status Bit
     public final int dcFlag = 1; //Bit# des dcFLAG im Statusregister
+    public final int irp = 7;//RP0 gesetzt -> Bank 1 aktiv, RP0 nicht gesetz: Bank 0 aktiv
     public final int rp0 = 5;//RP0 gesetzt -> Bank 1 aktiv, RP0 nicht gesetz: Bank 0 aktiv
-    public final int OPTION = 2; //Speicherstelle des Option Registers
+    public final int rp1 = 6;//RP0 gesetzt -> Bank 1 aktiv, RP0 nicht gesetz: Bank 0 aktiv
+    public final int OPTION = 1; //Speicherstelle des Option Registers
     public final int INTCON = 11; //Speichersstelle des INTCON Registers
     public final int TMR0 = 1; //Speichersstelle des TMR0 Registers
     //Speicherstruktur 
@@ -28,8 +33,6 @@ public class PicCPU {
     public int activeBank = 0;
     public int WDT = 0; //Watchdog Timer
     public int prescaler = 0; //Watchdog Timer Prescaler
-    public int nPD = 1; //Negiertes Power Down Status Bit
-    public int nTO = 1; //Negiertes Time Out Status Bit
     public int Laufzeit = 0; //Variable der Laufzeit
     public boolean interrupt = false;
     public boolean Aflanke = false;
@@ -45,6 +48,13 @@ public class PicCPU {
         memoryBank1[trisA] = 31;
         memoryBank1[trisB] = 255;
         akku = 0;
+
+        changeStatusReg(3, 1);
+        changeStatusReg(4, 1);
+        changeStatusReg(5, 0);
+        changeStatusReg(6, 0);
+        changeStatusReg(7, 0);
+
     }
 
     static public void e(Object... parameters) {
@@ -81,8 +91,16 @@ public class PicCPU {
     }
 
     public void fsrMemoryManagement() {
-        this.memoryBank0[0] = this.memoryBank0[this.memoryBank0[fsr]];
-        this.memoryBank1[0] = this.memoryBank1[this.memoryBank1[fsr]];
+
+        this.memoryBank0[fsr] = this.memoryBank1[fsr];
+
+        if (this.memoryBank0[fsr] <= 127) {
+            this.memoryBank0[0] = this.memoryBank0[this.memoryBank0[fsr]];
+        } else {
+            this.memoryBank0[0] = this.memoryBank1[(this.memoryBank0[fsr] - 127)];
+        }
+
+        this.memoryBank0[fsr] = this.memoryBank1[fsr];
     }
 
     /**
@@ -153,12 +171,49 @@ public class PicCPU {
     }
 
     public void Reset_WDT() {
-        e("Programm wird aufgrund von WDT resetet!");
+        e("Programm wird aufgrund von WDT resetet! \n");
+
+        int x = 0;
+        for (x = 0; x <= 127; x++) {
+            this.memoryBank0[x] = 0;
+            this.memoryBank1[x] = 0;
+        }                                             // Zurücksetzen des Registers
+
+        this.CallCount.clear();
+        // Zurücksetzen des Stacks
+        //this.akku = 0;                                                   // Zurücksetzen des W-Registers
+        //Zeit = 0;                                                   // Zurücksetzen der Laufzeit
+        // Stack_Counter = 0;                                          // Zurücksetzen des Stack-Zeigers
+        //this.memoryBank0[portA] = 31;                                             // Vorbelegung des A-Registers
+        //this.memoryBank0[portB] = 255;                                            // Vorbelegung des B-Registers
+        this.memoryBank1[trisA] = 31;                                            // Vorbelegung des A-Tris
+        this.memoryBank1[trisB] = 255;                                           // Vorbelegung des B-Tris
+
+        //##### 
+
+        this.linie = -1;                                              // PC-Counter auf -1 setzen, da er danach automatisch um 1 erhöht wird -> 0 
+        changeStatusReg(3, 1);
+
+        // Vorbelegung des Status-Registers
+        this.memoryBank0[fsr] = 128;                                               // Vorbelegung des Indirect-Registers
+        Aflanke = false;                                                // Vorbelegung der Flanke
+        Bflanke = false;                                                // Vorbelegung der Flanke
+        //  Zeit = 0;                                                   // Zeit auf 0 setzen
+        WDT = 0;  // WDT auf 0 setzen
+
+        this.interrupt = true;
+
+        //##
+
+        prescaler = 0;                                              // prescaler auf 0 setzen
+
     }
 
     public void interrupt() { // Kontrolliert, ob ein Interrupt aufgetreten ist
         //interner Interrupt
-
+           e("AKKU: " + akku + "\n");
+        //e("WDT: " + WDT + " PRESCALER " + getprescaler(!Get_PSA()));
+        //e("REgister OPTION " + this.memoryBank1[OPTION]);
         if (!Get_PSA()) { // TMR0 wird benutzt, daher kann der WDT hochzählen
             WDT++;
             if (WDT >= 256) { // WDT hat Überlauf -> Reset
@@ -564,9 +619,9 @@ public class PicCPU {
     public void COMF(int f, int d) {
         int result;
         if (this.activeBank == 0) {
-            result = this.memoryBank0[f] ^ 255;
+            result = this.memoryBank0[f] - 255;
         } else {
-            result = this.memoryBank1[f] ^ 255;
+            result = this.memoryBank1[f] - 255;
         }
 
         if (d == 0) {
@@ -1101,15 +1156,34 @@ public class PicCPU {
     }
 
     public void CLRWDT() {
+        WDT = 0;
+        prescaler = 0;
     }
 
-    public void RETFIE() {
+    public int RETFIE() {
+        int returnTo;
+
+        if (this.activeBank == 0) {
+            this.memoryBank0[INTCON] = this.memoryBank0[INTCON] | 128;
+        } else {
+            this.memoryBank1[INTCON] = this.memoryBank1[INTCON] | 128;
+        }
+
+        try {
+            returnTo = this.CallCount.pop();
+            return returnTo;
+        } catch (EmptyStackException e) {
+
+            return -1;
+        }
+
     }
 
     public void RETLW(int f) {
+
     }
 
-    public void SLEEP(int f, int b) {
+    public void SLEEP() {
         this.WDT = 0;
         this.prescaler++;
     }
@@ -1118,10 +1192,10 @@ public class PicCPU {
 
         if (this.activeBank == 0) {
 
-            int result = this.akku - this.memoryBank0[f];
+            int result = this.memoryBank0[f] - this.akku;
             if (d == 0) {
                 if (this.akku < this.memoryBank0[f]) { // Wenn als ERG was negatives rauskommt
-                    changeStatusReg(cFlag, this.memoryBank0[f]);
+                    changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.akku = result;
@@ -1137,7 +1211,7 @@ public class PicCPU {
                 }
             } else if (d == 1) {
                 if (this.akku < this.memoryBank0[f]) { // Wenn als ERG was negatives rauskommt
-                    changeStatusReg(cFlag, this.memoryBank0[f]);
+                    changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.memoryBank0[f] = result;
@@ -1155,40 +1229,40 @@ public class PicCPU {
 
         } else if (this.activeBank == 1) {
             if (d == 0) {
-                int result = this.akku - this.memoryBank1[f];
+                int result = this.memoryBank1[f] - this.akku;
 
                 if (this.akku < this.memoryBank1[f]) { // Wenn als ERG was negatives rauskommt
-                    changeStatusReg(cFlag, this.memoryBank1[f]);
+                    changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.akku = result;
 
                 } else {
-                    changeStatusReg(cFlag, 0);
+                    changeStatusReg(cFlag, 1);
                     if (result == 0) {
                         changeStatusReg(zFlag, 1);
                     } else {
                         changeStatusReg(zFlag, 0);
                     }
-                    this.akku = result;
+                    this.memoryBank1[f] = result;
                 }
             } else if (d == 1) {
                 int result = this.akku - this.memoryBank1[f];
 
                 if (this.akku < this.memoryBank1[f]) { // Wenn als ERG was negatives rauskommt
-                    changeStatusReg(cFlag, this.memoryBank1[f]);
+                    changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.akku = result;
 
                 } else {
-                    changeStatusReg(cFlag, 0);
+                    changeStatusReg(cFlag, 1);
                     if (result == 0) {
                         changeStatusReg(zFlag, 1);
                     } else {
                         changeStatusReg(zFlag, 0);
                     }
-                    this.akku = result;
+                    this.memoryBank1[f] = result;
                 }
             }
         }
