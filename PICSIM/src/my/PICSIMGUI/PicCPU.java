@@ -94,13 +94,18 @@ public class PicCPU {
 
         this.memoryBank0[fsr] = this.memoryBank1[fsr];
 
-        if (this.memoryBank0[fsr] <= 127) {
+        if (this.memoryBank0[fsr] <= 127) 
+        {
             this.memoryBank0[0] = this.memoryBank0[this.memoryBank0[fsr]];
-        } else {
+            this.memoryBank0[this.memoryBank0[fsr]] = this.memoryBank0[0];
+        } 
+        else 
+        {
             this.memoryBank0[0] = this.memoryBank1[(this.memoryBank0[fsr] - 127)];
+            this.memoryBank1[this.memoryBank0[fsr]-128] = this.memoryBank0[0];
         }
 
-        this.memoryBank0[fsr] = this.memoryBank1[fsr];
+        this.memoryBank1[fsr] = this.memoryBank0[fsr];        
     }
 
     /**
@@ -211,7 +216,7 @@ public class PicCPU {
 
     public void interrupt() { // Kontrolliert, ob ein Interrupt aufgetreten ist
         //interner Interrupt
-        e("AKKU: " + akku + "\n");
+        //e("AKKU: " + akku + "\n");
         //e("WDT: " + WDT + " PRESCALER " + getprescaler(!Get_PSA()));
         //e("REgister OPTION " + this.memoryBank1[OPTION]);
         if (!Get_PSA()) { // TMR0 wird benutzt, daher kann der WDT hochzählen
@@ -1176,11 +1181,10 @@ public class PicCPU {
 
     }
 
-    public int RETLW(int l) {
+    public void RETLW(int l) {
 
         this.akku = l;
 
-        return CallCount.pop();
     }
 
     public void SLEEP() {
