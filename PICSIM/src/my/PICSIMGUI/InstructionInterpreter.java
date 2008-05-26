@@ -11,57 +11,91 @@ public class InstructionInterpreter implements Runnable {
 
     public void run() {
 
-        for (int i = 0; i <= (input.length - 1); i++) {
+        int i = 0;
 
+        if (gui.running == true) {
+            for (i = 0; i <= (input.length - 1); i++) {
 
+                if (gui.running == true) {
 
-            if (gui.running == true) {
+                    pic.linie = i;
 
-                pic.linie = i;
-
-                int ret = translateCodeLine(i);
-                pic.interrupt();
-                if (ret != -2 && ret != -1) {
-                    i = ret;
-                }
-
-                if (ret == -1) {
-                    System.err.println("Error in line " + i);
-                    break;
-                }
-                try {
-                    //pic.setPortA(i);
-                    pic.setBank();
-                    pic.fsrMemoryManagement();
-                    pic.statusToMemory();
-
-                    gui.refreshGui();
-
-                    if (pic.interrupt) {
-                        i = pic.linie;
-                        pic.interrupt = false;
-                    } //Wenn sich aufgrund von Interupts was geändert hat
-
-
-                    if (gui.interpreterSlow) {
-                        Thread.sleep(1000);
-                    } else {
-                        Thread.sleep(10);
+                    int ret = translateCodeLine(i);
+                    pic.interrupt();
+                    if (ret != -2 && ret != -1) {
+                        i = ret;
                     }
 
-                    gui.readGui();
-                //Read muss nach dem sleep erfolgen, da die 
-                //eingabe sonst überlesen wird
+                    if (ret == -1) {
+                        System.err.println("Error in line " + i);
+                        break;
+                    }
+                    try {
+                        //pic.setPortA(i);
+                        pic.setBank();
+                        pic.fsrMemoryManagement();
+                        pic.statusToMemory();
+
+                        gui.refreshGui();
+
+                        if (pic.interrupt) {
+                            i = pic.linie;
+                            pic.interrupt = false;
+                        } //Wenn sich aufgrund von Interupts was geändert hat
 
 
+                        if (gui.interpreterSlow) {
+                            Thread.sleep(1000);
+                        } else {
+                            Thread.sleep(10);
+                        }
 
-                } catch (InterruptedException ie) {
-                    System.err.println("InteruptedExeption -> " + ie.getClass());
+                        gui.readGui();
+                    //Read muss nach dem sleep erfolgen, da die 
+                    //eingabe sonst überlesen wird
+                    } catch (InterruptedException ie) {
+                        System.err.println("InteruptedExeption -> " + ie.getClass());
+                    }
+                } else if (gui.running == false) {
+                    System.out.println("Thread beendet");
+                    break;
                 }
-            } else if (gui.running == false) {
-                System.out.println("Thread beendet");
-                break;
             }
+        }
+
+        if (gui.step == true) {
+            i = pic.linie;
+
+            int ret = translateCodeLine(i);
+            pic.interrupt();
+            if (ret != -2 && ret != -1) {
+                pic.linie = ret;
+            }
+
+            if (ret == -1) {
+                System.err.println("Error in line " + i);
+            }
+            //pic.setPortA(i);
+            pic.setBank();
+            pic.fsrMemoryManagement();
+            pic.statusToMemory();
+
+            gui.refreshGui();
+
+            if (pic.interrupt) {
+                i = pic.linie;
+                pic.interrupt = false;
+            } //Wenn sich aufgrund von Interupts was geändert hat
+
+            gui.readGui();
+            //Read muss nach dem sleep erfolgen, da die 
+            //eingabe sonst überlesen wird
+
+            if (gui.step == false) {
+                e("Thread beendet");
+            }
+            pic.linie++;
+            gui.step = false;
         }
     }
 
@@ -71,7 +105,8 @@ public class InstructionInterpreter implements Runnable {
      * @param gui GUI des Programms als Objekt mitgeben
      * @param pic PIC CPU als Objekt mitgeben
      */
-    InstructionInterpreter(String[] aInput, PICSIMGUI gui, PicCPU pic) {
+    InstructionInterpreter(String[] aInput,
+            PICSIMGUI gui, PicCPU pic) {
         this.input = aInput;
         this.gui = gui;
         this.pic = pic;
@@ -97,6 +132,7 @@ public class InstructionInterpreter implements Runnable {
         //i++;
 
         }
+
         this.instructions = newInstructions;
     }
 
@@ -106,6 +142,7 @@ public class InstructionInterpreter implements Runnable {
         } else {
             System.out.print(parameters[0]);
         }
+
     }
 
     public int getBitsFromB(int b) {
@@ -130,6 +167,7 @@ public class InstructionInterpreter implements Runnable {
                 System.err.println("Fehler beim lesen der bits.");
                 return -1;
         }
+
     }
 
     /**
@@ -210,6 +248,7 @@ public class InstructionInterpreter implements Runnable {
             } else {
                 return -2;
             }
+
         } else if (instructions[line] >= 3840 && instructions[line] <= 4095) {
             int d = instructions[line] & 128;
             int f = instructions[line] & 127;
@@ -220,6 +259,7 @@ public class InstructionInterpreter implements Runnable {
             } else {
                 return -2;
             }
+
         } else if (instructions[line] >= 1024 && instructions[line] <= 1279) {
             int d = instructions[line] & 128;
             int f = instructions[line] & 127;
@@ -298,6 +338,7 @@ public class InstructionInterpreter implements Runnable {
             } else {
                 return -2;
             }
+
         } else if (instructions[line] >= 7168 && instructions[line] <= 8191) {
             int b = getBitsFromB(instructions[line] & 896);
             int f = instructions[line] & 127;
@@ -308,6 +349,7 @@ public class InstructionInterpreter implements Runnable {
             } else {
                 return -2;
             }
+
         } else if (instructions[line] >= 15360 && instructions[line] <= 15871) {
             int f = instructions[line] & 255;
             gui.setStatusLabel("SUBLW " + f);
@@ -337,11 +379,11 @@ public class InstructionInterpreter implements Runnable {
             pic.RETFIE();
             return -2;
         } else if (instructions[line] >= 13312 && instructions[line] <= 14335) {
-            int f = instructions[line] & 255;
+            int l = instructions[line] & 255;
             int returnTo = pic.CallCount.pop();
-            gui.setStatusLabel("RETLW " + f);
-            System.out.println(line + " ist befehl retlw, Rücksprungadresse ist " + returnTo + "Literal ist " + f);
-            pic.RETLW(f);
+            gui.setStatusLabel("RETLW " + l);
+            System.out.println(line + " ist befehl retlw, Rücksprungadresse ist " + returnTo + "Literal ist " + l);
+            returnTo = pic.RETLW(l);
             return returnTo;
         } else if (instructions[line] >= 8192 && instructions[line] <= 10239) {
             int f = instructions[line] & 2047;
@@ -363,6 +405,7 @@ public class InstructionInterpreter implements Runnable {
                 System.err.println(line + " ist befehl return. Sprungadresse:  ERROR\nCall Stack ist leer!");
                 return -1;
             }
+
             gui.setStatusLabel("RETURN ");
             System.out.println(line + " ist befehl return. Sprungadresse: " + (returnTo));
             return returnTo; /*Rücksprungadresse*/
@@ -389,6 +432,7 @@ public class InstructionInterpreter implements Runnable {
             gui.setStatusLabel("NO MATCHING INSTRUCTION FOUND!");
             return -1;
         }
+
     }
 
     public void testPrint() {

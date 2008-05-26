@@ -211,7 +211,7 @@ public class PicCPU {
 
     public void interrupt() { // Kontrolliert, ob ein Interrupt aufgetreten ist
         //interner Interrupt
-           e("AKKU: " + akku + "\n");
+        e("AKKU: " + akku + "\n");
         //e("WDT: " + WDT + " PRESCALER " + getprescaler(!Get_PSA()));
         //e("REgister OPTION " + this.memoryBank1[OPTION]);
         if (!Get_PSA()) { // TMR0 wird benutzt, daher kann der WDT hochzählen
@@ -1161,8 +1161,6 @@ public class PicCPU {
     }
 
     public int RETFIE() {
-        int returnTo;
-
         if (this.activeBank == 0) {
             this.memoryBank0[INTCON] = this.memoryBank0[INTCON] | 128;
         } else {
@@ -1170,8 +1168,7 @@ public class PicCPU {
         }
 
         try {
-            returnTo = this.CallCount.pop();
-            return returnTo;
+            return this.CallCount.pop();
         } catch (EmptyStackException e) {
 
             return -1;
@@ -1179,8 +1176,11 @@ public class PicCPU {
 
     }
 
-    public void RETLW(int f) {
+    public int RETLW(int l) {
 
+        this.akku = l;
+
+        return CallCount.pop();
     }
 
     public void SLEEP() {

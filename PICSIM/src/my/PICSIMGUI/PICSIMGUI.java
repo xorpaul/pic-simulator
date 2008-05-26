@@ -600,10 +600,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        ButtonStep = new javax.swing.JButton();
+        jMenuBar2 = new javax.swing.JMenuBar();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -984,25 +985,36 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         jMenu2.setText("Edit");
         jMenuBar1.add(jMenu2);
 
-        setJMenuBar(jMenuBar1);
+        ButtonStep.setText("Step-by-Step LAlalalalalaal!");
+        ButtonStep.setToolTipText("Step-by-Step Compiling");
+        ButtonStep.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                ButtonStepMousePressed(evt);
+            }
+        });
+        ButtonStep.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonStepActionPerformed(evt);
+            }
+        });
 
-        jMenu1.setText("File");
+        jMenu3.setText("File");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Load File");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem2.setText("Load File");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 InputTextFileButtonActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu3.add(jMenuItem2);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar2.add(jMenu3);
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
+        jMenu4.setText("Edit");
+        jMenuBar2.add(jMenu4);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(jMenuBar2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1018,7 +1030,9 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ButtonStop)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(CheckBoxSloMo))
+                        .addComponent(CheckBoxSloMo)
+                        .addGap(49, 49, 49)
+                        .addComponent(ButtonStep))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -1044,7 +1058,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ButtonRun)
                             .addComponent(ButtonStop)
-                            .addComponent(CheckBoxSloMo))))
+                            .addComponent(CheckBoxSloMo)
+                            .addComponent(ButtonStep))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -1177,6 +1192,10 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         ButtonStop.setEnabled(false);
         ButtonRun.setEnabled(true);
         this.running = false;
+        this.step = false;
+        pic.linie = 0;
+        pic.Reset_WDT();
+        pic.akku = 0;
     }//GEN-LAST:event_ButtonStopMousePressed
 
     private void ComboBoxChangeFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboBoxChangeFormatActionPerformed
@@ -1191,6 +1210,25 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         refreshTables();
     }//GEN-LAST:event_ComboBoxChangeFormatActionPerformed
 
+    private void ButtonStepMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonStepMousePressed
+        if (this.CheckBoxSloMo.isSelected()) {
+            this.interpreterSlow = true;
+        } else {
+            this.interpreterSlow = false;
+        }
+
+        ButtonStop.setEnabled(true);
+        ButtonRun.setEnabled(false);
+        Thread interpreterThread = new Thread(interpret);
+        this.step = true;
+        //pic.linie++;
+        interpreterThread.start();  
+}//GEN-LAST:event_ButtonStepMousePressed
+
+    private void ButtonStepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonStepActionPerformed
+    // TODO add your handling code here:
+}//GEN-LAST:event_ButtonStepActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1204,6 +1242,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonRun;
+    private javax.swing.JButton ButtonStep;
     private javax.swing.JButton ButtonStop;
     private javax.swing.JCheckBox CheckBoxSloMo;
     private javax.swing.JComboBox ComboBoxChangeFormat;
@@ -1246,8 +1285,12 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JList jList1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
