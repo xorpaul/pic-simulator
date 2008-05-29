@@ -1,6 +1,5 @@
 /*
  * PICSIMGUI.java
- *
  * Created on April 7, 2008, 1:50 PM
  */
 package my.PICSIMGUI;
@@ -15,8 +14,12 @@ import javax.swing.JFileChooser;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
- * @author  Mogli BA, PP
+ * Grafisches Userinterface des Simulators. Beinhaltet Refresh-Funktionen,
+ * kümmert sich um das EventHandling (Drücken von Buttons/Ports etc)
+ * Beim Laden eines Codefiles wird der Interpreter Instanziiert
+ * Beim Drücken des Start Buttons wird der Interprete-Thread gestartet
+ * Beim Drücken des Stop Buttons wird der Thred beendet und der PIC sowie das
+ * GUI auf WDT-Reset gestellt
  */
 public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 

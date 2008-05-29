@@ -1,5 +1,15 @@
 package my.PICSIMGUI;
 
+/**
+ * Interpretiert den eingelesenen Opcode und ruft enstsprechend die PIC-Funktionen
+ * in der PicCPU Klasse auf. Realisiert als Thread. Run Methode ruft desweiteren
+ * auch GUI-Refresh, GUI-Einlese Methoden und Synchroisations Methoden auf.
+ * 
+ * Das GUI und die Instanz des PicCPU sind diesr Klasse als Klassenatribute mitgegeben
+ * sowie ein Array, welches das eingelesen File enthält. Mittels Kosnstruktor wird
+ * hieraus der Hex-Opcod herausgefiltert, zu Integerwerten umgewandelt und der
+ * Interpreter Funktion übergeben.
+ */
 public class InstructionInterpreter implements Runnable
 {
 
@@ -120,7 +130,6 @@ public class InstructionInterpreter implements Runnable
     }
 
     /**
-     * @category Konstruktor
      * @param aInput Erwartet als Parameter ein Array, in jedem Feld steht eine Textzeile.
      * @param gui GUI des Programms als Objekt mitgeben
      * @param pic PIC CPU als Objekt mitgeben
@@ -172,6 +181,13 @@ public class InstructionInterpreter implements Runnable
 
     }
 
+    /**Hilfsfunktion für Bitmanipulations-Funktionen des PIC
+     * Filter die absolute Zahl des Bits welches manipuliert werde soll aus der 
+     * verundung des 14-Bit Opcode mit 11 1000 0000 (stellen im Opcode wo b codiert ist)
+     * 
+     * @param b aud dem Opcode gefilterte Binärzahl
+     * @return absolute Stelle des Bits welche manipuliert werden soll
+     */
     public int getBitsFromB(int b)
     {
         switch (b)

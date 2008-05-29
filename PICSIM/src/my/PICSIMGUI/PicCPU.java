@@ -3,6 +3,16 @@ package my.PICSIMGUI;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
+/**
+ * Soll eine Nachbildung der PIC-Hardware sein. Hier sind alle Funktionen der CPU
+ * hinterlegt, sowie auch interrupt methoden, und etliche Hilfsmethoden zur Speicherverawaltung
+ * Zur einfachen Arbeit sind spezielle Registeradressen als Integer-Kosntanten definiert.
+ *  Im Kosntruktor wird der power-on reset status initialisiert.
+ * Besonderheit ist das Status Register. Dies liegt als eigenständiges Bit-Array vor, welches jederzeit
+ * mit dem Speicher Synchroisiert wird. Daher sollten auf das Status Register außer BCF und BSF
+ * keine anderen Funktionen angewandt werden. Desweiteren muss beachtet werden das JEDES bit im Status
+ * Register manipuliert werden kann. was nicht der PIC-Hardware entsspricht. * 
+ */
 public class PicCPU
 {
 
@@ -46,6 +56,10 @@ public class PicCPU
     public boolean Aflanke = false;
     public boolean Bflanke = false;
 
+    /**Ausführen der Stack.push() Methode, aber synchronisiert,
+     * beinhaltet einheitliche Exeption(Codeersparnis)
+     * @param value Wert der auf den Stack gelegt werden soll
+     */
     public synchronized void CallStackPush(int value)
     {
         try
@@ -58,6 +72,10 @@ public class PicCPU
         }
     }
 
+    /**Ausführen der Stack.pop() Methode, aber synchronisiert,
+     * beinhaltet einheitliche Exeption )Codeersparnis)
+     * @return Gepopter werd aus dem Stack 
+     */
     public synchronized int CallStackPop()
     {
         for (Object o : CallCount.toArray())
@@ -76,9 +94,9 @@ public class PicCPU
     }
 
     /**
-     * @category Konsruktor. Speicher initilisieren
+     * Konsruktor. Speicher und power-on reset status initilisieren
      */
-    PicCPU()
+    public PicCPU()
     {
         memoryBank0 = new int[128];
         memoryBank1 = new int[128];
@@ -100,6 +118,8 @@ public class PicCPU
 
     }
 
+//################################ Hilfsfunktionen #############################
+    
     static public void e(Object... parameters)
     {
         if (parameters.length == 2)
@@ -219,7 +239,182 @@ public class PicCPU
         statusReg[position] = value;
     }
 
-//   region Interrups // Implementierung der Interrups
+        public int[] getPortA()
+    {
+        int a = this.memoryBank0[portA];
+        int[] portABits = new int[5];
+
+        for (int i = 0; i <
+                5; i++)
+        {
+            portABits[i] = a % 2;
+            a /=
+                    2;
+        }
+
+        return portABits;
+    }
+
+    /**
+     * Schreibt den neuen Wert des PortA in seine Speicheradresse.
+     * Ausgelesen werrden die RadioButtons, werte an ein array übergeben     * 
+     * @param portAReadIn Enthält Information über geänderte Port Eingänge
+     * 0 --> Eingang auf 0 gesetzt
+     * 1 --> Eingang auf 1 gesetzt
+     * -2 -> Port ist ein Ausgang
+     */
+    public void setPortA(int[] portAReadIn)
+    {
+        String binValue = "";
+
+        for (int i = 4; i >=
+                0; i--)
+        {
+            if (portAReadIn[i] == -2)
+            {
+                binValue += String.valueOf(getPortA()[i]);
+            }
+            else
+            {
+                binValue += String.valueOf(portAReadIn[i]);
+            }
+
+        }
+
+        this.memoryBank0[portA] = Integer.parseInt(binValue, 2);
+    }
+
+    /**
+     * Schreibt den Wert von PortA als Bits in ein array
+     * @return Wert von PortA. Jedes Feld entspricht einem Bit
+     */
+    public int[] getPortB()
+    {
+        int a = this.memoryBank0[portB];
+        int[] portBBits = new int[8];
+
+        for (int i = 0; i <
+                8; i++)
+        {
+            portBBits[i] = a % 2;
+            a /=
+                    2;
+        }
+
+        return portBBits;
+    }
+
+    /**
+     * Schreibt den neuen Wert des PortB in seine Speicheradresse.
+     * Ausgelesen werrden die RadioButtons, werte an ein array übergeben     * 
+     * @param portBReadIn Enthält Information über geänderte Port Eingänge
+     * 0 --> Eingang auf 0 gesetzt
+     * 1 --> Eingang auf 1 gesetzt
+     * -2 -> Port ist ein Ausgang
+     */
+    public void setPortB(int[] portBReadIn)
+    {
+        String binValue = "";
+
+        for (int i = 7; i >=
+                0; i--)
+        {
+            if (portBReadIn[i] == -2)
+            {
+                binValue += String.valueOf(getPortB()[i]);
+            }
+            else
+            {
+                binValue += String.valueOf(portBReadIn[i]);
+            }
+
+        }
+
+        this.memoryBank0[portB] = Integer.parseInt(binValue, 2);
+    }
+
+    /**
+     * Schreibt den Wert von TrisA als Bits in ein array
+     * @return Wert von TrisA. Jedes Feld entspricht einem Bit
+     */
+    public int[] getTrisA()
+    {
+        int a = this.memoryBank1[trisA];
+        int[] trisABits = new int[5];
+
+        for (int i = 0; i <
+                5; i++)
+        {
+            trisABits[i] = a % 2;
+            a /=
+                    2;
+        }
+
+        return trisABits;
+    }
+
+    /**
+     * Schreibt den Wert von TrisB als Bits in ein array
+     * @return Wert von TrisB. Jedes Feld entspricht einem Bit
+     */
+    public int[] getTrisB()
+    {
+        int a = this.memoryBank1[trisB];
+        int[] trisBBits = new int[8];
+
+        for (int i = 0; i <
+                8; i++)
+        {
+            trisBBits[i] = a % 2;
+            a /=
+                    2;
+        }
+
+        return trisBBits;
+    }
+
+    public void checkFlags(int result)
+    {
+        if (result > 255)
+        {
+            changeStatusReg(cFlag, 1);
+            if (result - 255 == 0)
+            {
+                changeStatusReg(zFlag, 1);
+            }
+            else
+            {
+                changeStatusReg(zFlag, 0);
+            }
+
+        }
+        else
+        {
+            changeStatusReg(cFlag, 0);
+            if (result == 0)
+            {
+                changeStatusReg(zFlag, 1);
+            }
+            else
+            {
+                changeStatusReg(zFlag, 0);
+            }
+
+        }
+    }
+
+    public void printPortA()
+    {
+        System.err.println("Im Port A steht: " + this.memoryBank0[portA]);
+    }
+
+    public void printW()
+    {
+        System.err.println("Im Akku steht: " + this.akku);
+    }
+    
+    
+ //#################################### Interrupt Methoden #####################
     private boolean Get_INTEDG()
     { // Liefert den Wert für INTEDG
         return ((this.memoryBank1[OPTION] & 64) == 64);
@@ -568,182 +763,8 @@ public class PicCPU
         }
 
     }
-    //#############################################################################
-    public int[] getPortA()
-    {
-        int a = this.memoryBank0[portA];
-        int[] portABits = new int[5];
 
-        for (int i = 0; i <
-                5; i++)
-        {
-            portABits[i] = a % 2;
-            a /=
-                    2;
-        }
-
-        return portABits;
-    }
-
-    /**
-     * Schreibt den neuen Wert des PortA in seine Speicheradresse.
-     * Ausgelesen werrden die RadioButtons, werte an ein array übergeben     * 
-     * @param portAReadIn Enthält Information über geänderte Port Eingänge
-     * 0 --> Eingang auf 0 gesetzt
-     * 1 --> Eingang auf 1 gesetzt
-     * -2 -> Port ist ein Ausgang
-     */
-    public void setPortA(int[] portAReadIn)
-    {
-        String binValue = "";
-
-        for (int i = 4; i >=
-                0; i--)
-        {
-            if (portAReadIn[i] == -2)
-            {
-                binValue += String.valueOf(getPortA()[i]);
-            }
-            else
-            {
-                binValue += String.valueOf(portAReadIn[i]);
-            }
-
-        }
-
-        this.memoryBank0[portA] = Integer.parseInt(binValue, 2);
-    }
-
-    /**
-     * Schreibt den Wert von PortA als Bits in ein array
-     * @return Wert von PortA. Jedes Feld entspricht einem Bit
-     */
-    public int[] getPortB()
-    {
-        int a = this.memoryBank0[portB];
-        int[] portBBits = new int[8];
-
-        for (int i = 0; i <
-                8; i++)
-        {
-            portBBits[i] = a % 2;
-            a /=
-                    2;
-        }
-
-        return portBBits;
-    }
-
-    /**
-     * Schreibt den neuen Wert des PortB in seine Speicheradresse.
-     * Ausgelesen werrden die RadioButtons, werte an ein array übergeben     * 
-     * @param portAReadIn Enthält Information über geänderte Port Eingänge
-     * 0 --> Eingang auf 0 gesetzt
-     * 1 --> Eingang auf 1 gesetzt
-     * -2 -> Port ist ein Ausgang
-     */
-    public void setPortB(int[] portBReadIn)
-    {
-        String binValue = "";
-
-        for (int i = 7; i >=
-                0; i--)
-        {
-            if (portBReadIn[i] == -2)
-            {
-                binValue += String.valueOf(getPortB()[i]);
-            }
-            else
-            {
-                binValue += String.valueOf(portBReadIn[i]);
-            }
-
-        }
-
-        this.memoryBank0[portB] = Integer.parseInt(binValue, 2);
-    }
-
-    /**
-     * Schreibt den Wert von TrisA als Bits in ein array
-     * @return Wert von TrisA. Jedes Feld entspricht einem Bit
-     */
-    public int[] getTrisA()
-    {
-        int a = this.memoryBank1[trisA];
-        int[] trisABits = new int[5];
-
-        for (int i = 0; i <
-                5; i++)
-        {
-            trisABits[i] = a % 2;
-            a /=
-                    2;
-        }
-
-        return trisABits;
-    }
-
-    /**
-     * Schreibt den Wert von TrisB als Bits in ein array
-     * @return Wert von TrisB. Jedes Feld entspricht einem Bit
-     */
-    public int[] getTrisB()
-    {
-        int a = this.memoryBank1[trisB];
-        int[] trisBBits = new int[8];
-
-        for (int i = 0; i <
-                8; i++)
-        {
-            trisBBits[i] = a % 2;
-            a /=
-                    2;
-        }
-
-        return trisBBits;
-    }
-
-    public void checkFlags(int result)
-    {
-        if (result > 255)
-        {
-            changeStatusReg(cFlag, 1);
-            if (result - 255 == 0)
-            {
-                changeStatusReg(zFlag, 1);
-            }
-            else
-            {
-                changeStatusReg(zFlag, 0);
-            }
-
-        }
-        else
-        {
-            changeStatusReg(cFlag, 0);
-            if (result == 0)
-            {
-                changeStatusReg(zFlag, 1);
-            }
-            else
-            {
-                changeStatusReg(zFlag, 0);
-            }
-
-        }
-    }
-
-    public void printPortA()
-    {
-        System.err.println("Im Port A steht: " + this.memoryBank0[portA]);
-    }
-
-    public void printW()
-    {
-        System.err.println("Im Akku steht: " + this.akku);
-    }
-
-//########################## PIC-FUNKTIONEN ######################
+//############################### PIC-FUNKTIONEN ###############################
     /**Erhöht register f um eins
      * @param f Register Adresse
      */
