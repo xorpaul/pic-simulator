@@ -1193,9 +1193,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         ButtonRun.setEnabled(true);
         this.running = false;
         this.step = false;
-        pic.linie = 0;
+        pic.linie = 0;//Weis net warum, aber nachm rest is linie -1 --> error
         pic.Reset_WDT();
+        pic.linie = 0; //Weis net warum, aber nachm rest is linie -1 --> error
         pic.akku = 0;
+        refreshGui();
     }//GEN-LAST:event_ButtonStopMousePressed
 
     private void ComboBoxChangeFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboBoxChangeFormatActionPerformed

@@ -1,7 +1,5 @@
 package my.PICSIMGUI;
 
-import java.util.EmptyStackException;
-
 public class InstructionInterpreter implements Runnable
 {
 
@@ -127,7 +125,7 @@ public class InstructionInterpreter implements Runnable
      * @param gui GUI des Programms als Objekt mitgeben
      * @param pic PIC CPU als Objekt mitgeben
      */
-    InstructionInterpreter(String[] aInput,
+    public InstructionInterpreter(String[] aInput,
             PICSIMGUI gui, PicCPU pic)
     {
         this.input = aInput;
@@ -482,30 +480,22 @@ public class InstructionInterpreter implements Runnable
         {
             int returnTo;
             int l = instructions[line] & 255;
-                                for(Object o : pic.CallCount.toArray())
-                    {
-                        System.err.println(o.toString());
-                    }
-            
-            try{returnTo = pic.CallCount.pop();}
-            catch(EmptyStackException est)
-            {
-                System.err.println("Call Stack ist leer! In " + est.getClass());
-                return -1;
-            }
+
+            returnTo = pic.CallStackPop();
             gui.setStatusLabel("RETLW " + l);
             System.out.println(line + " ist befehl retlw, Rücksprungadresse ist " + returnTo + "Literal ist " + l);
             pic.RETLW(l);
-            return returnTo;
+            return returnTo -1;
         }
         else if (instructions[line] >= 8192 && instructions[line] <= 10239)
         {
             int f = instructions[line] & 2047;
             gui.setStatusLabel("CALL " + f);
             System.out.println(line + " ist befehl Call, Sprungadresse ist " + f);
-            try{
-            pic.CallCount.push(line + 1);}
-            catch(Exception e){System.err.println("Konnte nicht auf Stack schreiben");}
+            pic.CallStackPush(line + 1);
+//            try{
+//            pic.CallCount.push(line + 1);}
+//            catch(Exception e){System.err.println("Konnte nicht auf Stack schreiben");}
             return f - 1;
         }
         else if (instructions[line] >= 12288 && instructions[line] <= 13311)
@@ -519,15 +509,16 @@ public class InstructionInterpreter implements Runnable
         else if (instructions[line] == 8)
         {
             int returnTo;
-            try
-            {
-                returnTo = pic.CallCount.pop();
-            }
-            catch (EmptyStackException e)
-            {
-                System.err.println(line + " ist befehl return. Sprungadresse:  ERROR\nCall Stack ist leer!");
-                return -1;
-            }
+            returnTo = pic.CallStackPop();
+//            try
+//            {
+//                returnTo = pic.CallCount.pop();
+//            }
+//            catch (EmptyStackException e)
+//            {
+//                System.err.println(line + " ist befehl return. Sprungadresse:  ERROR\nCall Stack ist leer!");
+//                return -1;
+//            }
 
             gui.setStatusLabel("RETURN ");
             System.out.println(line + " ist befehl return. Sprungadresse: " + (returnTo));
