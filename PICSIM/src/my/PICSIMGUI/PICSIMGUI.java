@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
 import java.util.Vector;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.table.DefaultTableModel;
 
@@ -23,7 +24,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 
-    public PicCPU pic = new PicCPU(); //PIC Prozessor
+    public PicCPU pic = new PicCPU(this); //PIC Prozessor
     public InstructionInterpreter interpret; //Interpreter
     public boolean interpreterSlow; // Speed-Flag
     public boolean running = false; // Start/Stop Flag
@@ -100,7 +101,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
      */
     public void refreshGui() {
         jList1.setSelectedIndex(pic.linie);
-        //jList1.
+        jList1.ensureIndexIsVisible(pic.linie);
 
         pic.statusToMemory();
         this.TextFieldWValue.setText(String.valueOf(pic.akku));
@@ -1113,7 +1114,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
             int lineCount = 0;
             String[] Code;
 
-            jList1.removeAll();
+
+
             FileReader fr = new FileReader(fileURL);
             BufferedReader br = new BufferedReader(fr);
             //Zweiter Bufferd Reader nit dem selben file
@@ -1141,6 +1143,12 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                 jList1.setListData(vector);
                 c++;
             }
+
+            if (jList1.getComponentCount() == 0) {
+                jList1.setModel(new DefaultListModel());
+
+            }
+
             interpret = new InstructionInterpreter(Code, this, this.pic);
         } catch (IOException e) {
             // catch possible io errors from readLine()
@@ -1192,16 +1200,24 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_CheckBoxSloMoActionPerformed
 
     private void ButtonStopMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ButtonStopMousePressed
+        this.HardReset();
+    }//GEN-LAST:event_ButtonStopMousePressed
+
+    public void HardReset() {
         ButtonStop.setEnabled(false);
         ButtonRun.setEnabled(true);
         this.running = false;
         this.step = false;
-        pic.linie = 0;//Weis net warum, aber nachm rest is linie -1 --> error
-        pic.Reset_WDT();
-        pic.linie = 0; //Weis net warum, aber nachm rest is linie -1 --> error
-        pic.akku = 0;
-        refreshGui();
-    }//GEN-LAST:event_ButtonStopMousePressed
+//        pic.linie = 0;//Weis net warum, aber nachm rest is linie -1 --> error
+//        pic.Reset_WDT();
+//        pic.linie = 0; //Weis net warum, aber nachm rest is linie -1 --> error
+//        pic.akku = 0;
+//        refreshGui();
+//        pic.
+        pic = new PicCPU(this);
+        interpret = new InstructionInterpreter(interpret.input, this, this.pic);
+        this.refreshGui();
+    }
 
     private void ComboBoxChangeFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboBoxChangeFormatActionPerformed
         if (ComboBoxChangeFormat.getSelectedItem().equals("DEZ")) {
