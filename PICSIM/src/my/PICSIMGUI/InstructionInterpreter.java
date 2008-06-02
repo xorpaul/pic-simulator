@@ -28,7 +28,6 @@ public class InstructionInterpreter implements Runnable {
                 if (gui.running == true) {
 
                     pic.linie = i;
-
                     int ret = translateCodeLine(i);
                     pic.interrupt();
 

@@ -1489,6 +1489,12 @@ public class PicCPU {
 
     public void SUBWF(int f, int d) {
         f = getIndirectAdress(f);
+        int test = 255;
+        int com = ~test + 1;
+        int com2 = (test ^ 255) + 1;
+        System.out.println("Komplement von " + test + " ist " + com);
+        System.out.println("Komplement von " + test + " ist " + com2);
+
         if (this.activeBank == 0) {
 
             int result = this.memoryBank0[f] - this.akku;
@@ -1510,7 +1516,7 @@ public class PicCPU {
                         changeStatusReg(zFlag, 0);
                     }
 
-                    this.akku = (result ^ 255) + 1;
+                    this.akku = ((-result) ^ 255) + 1;
                 }
 
             } else if (d != 0) // d ist entweder 0 oder 128 bzw ja nachdem an welcher stelle das d bit steht!
@@ -1530,7 +1536,7 @@ public class PicCPU {
                         changeStatusReg(zFlag, 0);
                     }
 
-                    result = (result ^ 255) + 1;
+                    result = ((-result) ^ 255) + 1;
 
                     this.memoryBank0[f] = result;
 
@@ -1559,7 +1565,7 @@ public class PicCPU {
                         changeStatusReg(zFlag, 0);
                     }
 
-                    this.akku = (result ^ 255) + 1;
+                    this.akku = ((-result) ^ 255) + 1;
                 }
 
             } else if (d != 0) {
@@ -1579,7 +1585,7 @@ public class PicCPU {
                         changeStatusReg(zFlag, 0);
                     }
 
-                    result = (result ^ 255) + 1;
+                    result = ((-result) ^ 255) + 1;
 
                     this.memoryBank1[f] = result;
                     affectsBothBanks(f, result);
