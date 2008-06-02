@@ -13,7 +13,8 @@ import java.util.Stack;
  * keine anderen Funktionen angewandt werden. Desweiteren muss beachtet werden das JEDES bit im Status
  * Register manipuliert werden kann. was nicht der PIC-Hardware entsspricht. * 
  */
-public class PicCPU {
+public class PicCPU
+{
 
     private PICSIMGUI gui;
     public Stack<Integer> CallCount = new Stack<Integer>(); //Stack
@@ -55,17 +56,23 @@ public class PicCPU {
     public boolean interrupt = false;
     public boolean Aflanke = false;
     public boolean Bflanke = false;
+    int[] portAlatch = new int[8];
+    int[] portBlatch = new int[8];
 
     /**Ausführen der Stack.push() Methode, aber synchronisiert,
      * beinhaltet einheitliche Exeption(Codeersparnis)
      * @param value Wert der auf den Stack gelegt werden soll
      */
-    public synchronized void CallStackPush(int value) {
-        try {
+    public synchronized void CallStackPush(int value)
+    {
+        try
+        {
 
             this.getCallCount().push(value);
         //e(this.getCallCount().toString());
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             System.err.println("Konnte nicht auf Call Stack schreibe!\n\n" + e.fillInStackTrace());
         }
     }
@@ -74,13 +81,17 @@ public class PicCPU {
      * beinhaltet einheitliche Exeption )Codeersparnis)
      * @return Gepopter werd aus dem Stack 
      */
-    public synchronized int CallStackPop() {
+    public synchronized int CallStackPop()
+    {
 
-        try {
+        try
+        {
             int fu = this.getCallCount().pop();
             e(this.getCallCount().toString());
             return fu;
-        } catch (EmptyStackException est) {
+        }
+        catch (EmptyStackException est)
+        {
             System.err.println("Call Stack ist leer! " + est.fillInStackTrace());
             gui.running = false;
             return -1;
@@ -90,7 +101,8 @@ public class PicCPU {
     /**
      * Konsruktor. Speicher und power-on reset status initilisieren
      */
-    public PicCPU(PICSIMGUI gui) {
+    public PicCPU(PICSIMGUI gui)
+    {
         memoryBank0 = new int[128];
         memoryBank1 = new int[128];
 
@@ -114,15 +126,20 @@ public class PicCPU {
     }
 
 //################################ Hilfsfunktionen #############################
-    static public void e(Object... parameters) {
-        if (parameters.length == 2) {
+    static public void e(Object... parameters)
+    {
+        if (parameters.length == 2)
+        {
             System.out.print(parameters[0]);
-        } else {
+        }
+        else
+        {
             System.out.print(parameters[0]);
         }
     }
 
-    public void setPortA(int value) {
+    public void setPortA(int value)
+    {
         this.memoryBank0[portA] = value;
     }
 
@@ -130,9 +147,11 @@ public class PicCPU {
      * Erstellt einen IntegerWert aus dem statusRegister Array
      * und schreibt es an die Adresse 3 der Speicherbänke.
      */
-    public void statusToMemory() {
+    public void statusToMemory()
+    {
         String statusAsBin = "";
-        for (int i = 7; i >= 0; i--) {
+        for (int i = 7; i >= 0; i--)
+        {
             statusAsBin += String.valueOf(statusReg[i]);
         }
         memoryBank0[status] = Integer.parseInt(statusAsBin, 2);
@@ -142,10 +161,14 @@ public class PicCPU {
         memoryBank1[PCL] = linie;
     }
 
-    public void setBank() {
-        if (statusReg[rp0] == 0) {
+    public void setBank()
+    {
+        if (statusReg[rp0] == 0)
+        {
             activeBank = 0;
-        } else {
+        }
+        else
+        {
             activeBank = 1;
         }
     }
@@ -156,22 +179,116 @@ public class PicCPU {
      * @param f Adresse des angesprochen Registers
      * @param value Neuer Wert des Registers
      */
-    private void affectsBothBanks(int f, int value) {
-        if (f == fsr || f == status || f == PCLATH || f == INTCON) {
+    private void affectsBothBanks(int f, int value)
+    {
+        if (f == fsr || f == status || f == PCLATH || f == INTCON)
+        {
             memoryBank0[f] = value;
             memoryBank1[f] = value;
         }
     }
 
-    public void fsrMemoryManagement() {
+    public void fsrMemoryManagement()
+    {
         //FSR auf beind Bänken immmer gleich        
-        if (this.memoryBank0[fsr] <= 127) {
+        if (this.memoryBank0[fsr] <= 127)
+        {
             this.memoryBank0[0] = this.memoryBank0[this.memoryBank0[fsr]];
         //this.memoryBank0[this.memoryBank0[fsr]] = this.memoryBank0[0];
-        } else if (memoryBank0[fsr] > 127) {
+        }
+        else if (memoryBank0[fsr] > 127)
+        {
             this.memoryBank0[0] = this.memoryBank1[(this.memoryBank0[fsr] - 127)];
         //this.memoryBank1[this.memoryBank0[fsr] - 128] = this.memoryBank0[0];
         }
+    }
+
+    public void checkLatch()
+    {
+        int[] trisAStatus = getTrisA();
+        int[] trisBStatus = getTrisB();
+        int[] outA = new int[5];
+        int[] outB = new int[8];
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (trisAStatus[i] == 0)
+                outA[i] = portAlatch[i];
+            else
+                outA[i] = getPortA()[i];
+        }
+        setPortA(outA);
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (trisBStatus[i] == 0)
+                outB[i] = portBlatch[i];
+            else
+                outB[i] = getPortB()[i];
+        }
+        setPortB(outB);
+    }
+
+    private int latchPortB(int result)
+    {
+        int[] out = new int[8];
+        int tris[] = getTrisB();
+        int port[] = getPortB();
+        int[] toPort = toBinArray(result);
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (tris[i] == 0) //Wenn als Ausgang definiert direkt rausschreiben.
+                out[i] = toPort[i];
+            else
+                out[i] = port[i]; //Sonst alter wert beibehalten
+        }
+        portAlatch = toPort; //Zwischenspeichern was man eigentlich reinschreiben wollte
+
+        String binValue = "";
+
+        for (int i = 7; i >= 0; i--)
+        {
+            binValue += String.valueOf(out[i]);
+        }
+
+        return Integer.parseInt(binValue, 2);
+    }
+
+    private int latchPortA(int result)
+    {
+        int[] out = new int[8];
+        int tris[] = getTrisA();
+        int port[] = getPortA();
+        int[] toPort = toBinArray(result);
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (tris[i] == 0) //Wenn als Ausgang definiert direkt rausschreiben.
+                out[i] = toPort[i];
+            else
+                out[i] = port[i]; //Sonst alter wert beibehalten
+        }
+        portAlatch = toPort; //Zwischenspeichern was man eigentlich reinschreiben wollte
+
+        String binValue = "";
+
+        for (int i = 4; i >= 0; i--)
+        {
+            binValue += String.valueOf(out[i]);
+        }
+
+        return Integer.parseInt(binValue, 2);
+    }
+
+    private int latch(int f, int result)
+    {
+        if (f == portA)
+            return latchPortA(result);
+        else if (f == portB)
+            return latchPortB(result);
+        else
+            return result;
     }
 
     /**Prüft ob in register 0 geschrieben wird, wenn je gibt er die adresse des 
@@ -185,18 +302,24 @@ public class PicCPU {
      * @param f Direkte Adresse des Registers
      * @return Entweder Direkte oder inirekte adresse des Registers
      */
-    public int getIndirectAdress(int f) {
-        int swapActiveBank = activeBank;
+    public int getIndirectAdress(int f)
+    {
+
         if (f == 0) //
         {
-            if (this.memoryBank0[fsr] <= 127) {
+            if (this.memoryBank0[fsr] <= 127)
+            {
                 activeBank = 0;
                 return memoryBank0[fsr];//FSR auf beiden Bänken gleich!
-            } else {
+            }
+            else
+            {
                 activeBank = 1;
                 return this.memoryBank0[fsr] - 128;
             }
-        } else {
+        }
+        else
+        {
             return f;
         }
     }
@@ -205,16 +328,19 @@ public class PicCPU {
      * @param position Bit welches im Statusregister veränder werden soll. Vrgl final int's am Klassenanfang
      * @param value darf 0 oder 1 sein entsprechend für high oder low
      */
-    public void changeStatusReg(int position, int value) {
+    public void changeStatusReg(int position, int value)
+    {
         statusReg[position] = value;
     }
 
-    public int[] getPortA() {
+    public int[] getPortA()
+    {
         int a = this.memoryBank0[portA];
         int[] portABits = new int[5];
 
         for (int i = 0; i <
-                5; i++) {
+                5; i++)
+        {
             portABits[i] = a % 2;
             a /=
                     2;
@@ -231,17 +357,16 @@ public class PicCPU {
      * 1 --> Eingang auf 1 gesetzt
      * -2 -> Port ist ein Ausgang
      */
-    public void setPortA(int[] portAReadIn) {
+    public void setPortA(int[] portAReadIn)
+    {
         String binValue = "";
 
-        for (int i = 4; i >=
-                0; i--) {
-            if (portAReadIn[i] == -2) {
+        for (int i = 4; i >= 0; i--)
+        {
+            if (portAReadIn[i] == -2)
                 binValue += String.valueOf(getPortA()[i]);
-            } else {
+            else
                 binValue += String.valueOf(portAReadIn[i]);
-            }
-
         }
 
         this.memoryBank0[portA] = Integer.parseInt(binValue, 2);
@@ -251,12 +376,14 @@ public class PicCPU {
      * Schreibt den Wert von PortA als Bits in ein array
      * @return Wert von PortA. Jedes Feld entspricht einem Bit
      */
-    public int[] getPortB() {
+    public int[] getPortB()
+    {
         int a = this.memoryBank0[portB];
         int[] portBBits = new int[8];
 
         for (int i = 0; i <
-                8; i++) {
+                8; i++)
+        {
             portBBits[i] = a % 2;
             a /=
                     2;
@@ -273,14 +400,19 @@ public class PicCPU {
      * 1 --> Eingang auf 1 gesetzt
      * -2 -> Port ist ein Ausgang
      */
-    public void setPortB(int[] portBReadIn) {
+    public void setPortB(int[] portBReadIn)
+    {
         String binValue = "";
 
         for (int i = 7; i >=
-                0; i--) {
-            if (portBReadIn[i] == -2) {
+                0; i--)
+        {
+            if (portBReadIn[i] == -2)
+            {
                 binValue += String.valueOf(getPortB()[i]);
-            } else {
+            }
+            else
+            {
                 binValue += String.valueOf(portBReadIn[i]);
             }
 
@@ -293,12 +425,14 @@ public class PicCPU {
      * Schreibt den Wert von TrisA als Bits in ein array
      * @return Wert von TrisA. Jedes Feld entspricht einem Bit
      */
-    public int[] getTrisA() {
+    public int[] getTrisA()
+    {
         int a = this.memoryBank1[trisA];
         int[] trisABits = new int[5];
 
         for (int i = 0; i <
-                5; i++) {
+                5; i++)
+        {
             trisABits[i] = a % 2;
             a /=
                     2;
@@ -307,16 +441,41 @@ public class PicCPU {
         return trisABits;
     }
 
+    public int[] toBinArray(int value)
+    {
+        int[] Bits = new int[8];
+
+        for (int i = 0; i < 8; i++)
+        {
+            Bits[i] = value % 2;
+            value /=
+                    2;
+        }
+        return Bits;
+    }
+
+    public int binArrayToInt(int [] binArray)
+    {
+       String binValue = "";
+       int length = binArray.length-1;
+        for (int i = length; i >= 0; i--)
+            binValue += String.valueOf(binArray[i]);
+        
+        return Integer.parseInt(binValue, 2);
+    }
+    
     /**
      * Schreibt den Wert von TrisB als Bits in ein array
      * @return Wert von TrisB. Jedes Feld entspricht einem Bit
      */
-    public int[] getTrisB() {
+    public int[] getTrisB()
+    {
         int a = this.memoryBank1[trisB];
         int[] trisBBits = new int[8];
 
         for (int i = 0; i <
-                8; i++) {
+                8; i++)
+        {
             trisBBits[i] = a % 2;
             a /=
                     2;
@@ -325,98 +484,133 @@ public class PicCPU {
         return trisBBits;
     }
 
-    public void checkFlags(int result) {
-        if (result > 255) {
+    public void checkFlags(int result)
+    {
+        if (result > 255)
+        {
             changeStatusReg(cFlag, 1);
-            if (result - 255 == 0) {
+            if (result - 255 == 0)
+            {
                 changeStatusReg(zFlag, 1);
-            } else {
+            }
+            else
+            {
                 changeStatusReg(zFlag, 0);
             }
 
-        } else {
+        }
+        else
+        {
             changeStatusReg(cFlag, 0);
-            if (result == 0) {
+            if (result == 0)
+            {
                 changeStatusReg(zFlag, 1);
-            } else {
+            }
+            else
+            {
                 changeStatusReg(zFlag, 0);
             }
 
         }
     }
 
-    public void printPortA() {
+    public void printPortA()
+    {
         System.err.println("Im Port A steht: " + this.memoryBank0[portA]);
     }
 
-    public void printW() {
+    public void printW()
+    {
         System.err.println("Im Akku steht: " + this.akku);
     }
 
     //#################################### Interrupt Methoden #####################
-    private boolean Get_INTEDG() { // Liefert den Wert für INTEDG
+    private boolean Get_INTEDG()
+    { // Liefert den Wert für INTEDG
         return ((this.memoryBank1[OPTION] & 64) == 64);
     }
 
-    private boolean Get_T0CS() { // Liefert den Wert fürT0CS
+    private boolean Get_T0CS()
+    { // Liefert den Wert fürT0CS
         return ((this.memoryBank1[OPTION] & 32) == 32);
     }
 
-    private boolean Get_T0SE() { // Liefert den Wert für T0SE
+    private boolean Get_T0SE()
+    { // Liefert den Wert für T0SE
         return ((this.memoryBank1[OPTION] & 16) == 16);
     }
 
-    private boolean Get_PSA() { // Liefert den Wert für PSA
+    private boolean Get_PSA()
+    { // Liefert den Wert für PSA
         return ((this.memoryBank1[OPTION] & 8) == 8);
     }
 
-    private boolean Get_GIE() { // Liefert den Wert für GIE
-        if (activeBank == 0) {
+    private boolean Get_GIE()
+    { // Liefert den Wert für GIE
+        if (activeBank == 0)
+        {
             return ((this.memoryBank0[INTCON] & 128) == 128);
-        } else {
+        }
+        else
+        {
             return ((this.memoryBank1[INTCON] & 128) == 128);
         }
 
     }
 
-    private boolean Get_T0IE() { // Liefert den Wert für T0IE
-        if (activeBank == 0) {
+    private boolean Get_T0IE()
+    { // Liefert den Wert für T0IE
+        if (activeBank == 0)
+        {
             return ((this.memoryBank0[INTCON] & 32) == 32);
-        } else {
+        }
+        else
+        {
             return ((this.memoryBank1[INTCON] & 32) == 32);
         }
 
     }
 
-    private boolean Get_INTE() { // Liefert den Wert für INTE
-        if (activeBank == 0) {
+    private boolean Get_INTE()
+    { // Liefert den Wert für INTE
+        if (activeBank == 0)
+        {
             return ((this.memoryBank0[INTCON] & 16) == 16);
-        } else {
+        }
+        else
+        {
             return ((this.memoryBank1[INTCON] & 16) == 16);
         }
 
     }
 
-    private boolean Get_AInt() { // Liefert den Wert des 4. Bits vom A-Register
+    private boolean Get_AInt()
+    { // Liefert den Wert des 4. Bits vom A-Register
         return ((this.memoryBank0[portA] & 8) == 8);
     }
 
-    private boolean Get_BInt() { // Liefert den Wert des 8. Bit des B-Registers zurück
+    private boolean Get_BInt()
+    { // Liefert den Wert des 8. Bit des B-Registers zurück
         return ((this.memoryBank0[portB] & 1) == 1);
     }
 
-    private double getprescaler(boolean timer) { // Liefert die eingstellte prescaler-Rate abhängig vom WDT/TMR0 zurück
-        if (timer) {
+    private double getprescaler(boolean timer)
+    { // Liefert die eingstellte prescaler-Rate abhängig vom WDT/TMR0 zurück
+        if (timer)
+        {
 // Prescaler des Timer wird abgefragt
             return (2 * Math.pow(2, (this.memoryBank1[OPTION] & 7))); //ACHTUNG DOUBLE
-        } else {
+        }
+        else
+        {
 // Prescaler des WDT wird abgefragt
             return (Math.pow(2, (this.memoryBank1[OPTION] & 7)));  //ACHTUNG DOUBLE
         }
 
     }
 
-    public void Reset_WDT() {
+    public void Reset_WDT()
+    {
         e("Programm wird aufgrund von WDT resetet! \n");
         /*
         int x = 0;
@@ -456,32 +650,43 @@ public class PicCPU {
         gui.HardReset();
     }
 
-    public void interrupt() { // Kontrolliert, ob ein Interrupt aufgetreten ist
+    public void interrupt()
+    { // Kontrolliert, ob ein Interrupt aufgetreten ist
         //interner Interrupt
         //e("AKKU: " + akku + "\n");
         //e("WDT: " + WDT + " PRESCALER " + getprescaler(!Get_PSA()));
         //e("REgister OPTION " + this.memoryBank1[OPTION]);
-        if (!Get_PSA()) { // TMR0 wird benutzt, daher kann der WDT hochzählen
+        if (!Get_PSA())
+        { // TMR0 wird benutzt, daher kann der WDT hochzählen
             WDT++;
-            if (WDT >= 256) { // WDT hat Überlauf -> Reset
+            if (WDT >= 256)
+            { // WDT hat Überlauf -> Reset
                 Reset_WDT();
             }
 
         }
-        if (!Get_T0CS()) { // Ich bin ein Timer -> keine Flanke
-            if (!Get_PSA()) { // Ich bin auf RTM0
-                if ((Get_GIE()) && (Get_T0IE())) { // Ich darf starten
+        if (!Get_T0CS())
+        { // Ich bin ein Timer -> keine Flanke
+            if (!Get_PSA())
+            { // Ich bin auf RTM0
+                if ((Get_GIE()) && (Get_T0IE()))
+                { // Ich darf starten
                     prescaler++;
-                    if (prescaler >= getprescaler(true)) { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
+                    if (prescaler >= getprescaler(true))
+                    { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
                         this.memoryBank0[TMR0]++;
                         prescaler =
                                 0;
-                        if (this.memoryBank0[TMR0] >= 256) { // TMR0 hat Überlauf -> Interrupt
+                        if (this.memoryBank0[TMR0] >= 256)
+                        { // TMR0 hat Überlauf -> Interrupt
                             this.memoryBank0[TMR0] = 0;
-                            if (activeBank == 0) {
+                            if (activeBank == 0)
+                            {
                                 this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] | 4);
                                 this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] & 127);
-                            } else {
+                            }
+                            else
+                            {
                                 this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                                 this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                             }
@@ -497,16 +702,23 @@ public class PicCPU {
 
                     }
                 }
-            } else { // Ich bin auf WDT, daher TMR0 sofort erhöhen
+            }
+            else
+            { // Ich bin auf WDT, daher TMR0 sofort erhöhen
                 prescaler++;
-                if ((Get_GIE()) && (Get_T0IE())) { // Ich darf starten
+                if ((Get_GIE()) && (Get_T0IE()))
+                { // Ich darf starten
                     this.memoryBank0[TMR0]++;
-                    if (this.memoryBank0[TMR0] >= 256) { // TMR0 hat Überlauf -> Interrupt
+                    if (this.memoryBank0[TMR0] >= 256)
+                    { // TMR0 hat Überlauf -> Interrupt
                         this.memoryBank0[TMR0] = 0;
-                        if (activeBank == 0) {
+                        if (activeBank == 0)
+                        {
                             this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] | 4);
                             this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] & 127);
-                        } else {
+                        }
+                        else
+                        {
                             this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                             this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                         }
@@ -521,33 +733,44 @@ public class PicCPU {
                     }
 
                 }
-                if (prescaler >= getprescaler(false)) { // Wenn prescaler überlauf hat, dann WDT erhöhen
+                if (prescaler >= getprescaler(false))
+                { // Wenn prescaler überlauf hat, dann WDT erhöhen
                     WDT++;
                     prescaler =
                             0;
-                    if (WDT >= 256) { // WDT erzeugt Überlauf -> Reset
+                    if (WDT >= 256)
+                    { // WDT erzeugt Überlauf -> Reset
                         Reset_WDT();
                     }
 
                 }
             }
 
-        } else { // Ich bin ein Counter, ich brauche eine Flanke
+        }
+        else
+        { // Ich bin ein Counter, ich brauche eine Flanke
             if (!Get_PSA()) // Ich bin auf RTM0
             {
-                if ((Get_AInt() != (Aflanke == true)) && (Get_AInt() != Get_T0SE())) { // Flanke war da und gültige Flanke war da
-                    if ((Get_GIE()) && (Get_T0IE())) { // Ich darf starten
+                if ((Get_AInt() != (Aflanke == true)) && (Get_AInt() != Get_T0SE()))
+                { // Flanke war da und gültige Flanke war da
+                    if ((Get_GIE()) && (Get_T0IE()))
+                    { // Ich darf starten
                         prescaler++;
-                        if (prescaler >= getprescaler(true)) { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
+                        if (prescaler >= getprescaler(true))
+                        { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
                             this.memoryBank0[TMR0]++;
                             prescaler =
                                     0;
-                            if (this.memoryBank0[TMR0] >= 256) { // TMR0 hat Überlauf -> Interrupt
+                            if (this.memoryBank0[TMR0] >= 256)
+                            { // TMR0 hat Überlauf -> Interrupt
                                 this.memoryBank0[TMR0] = 0;
-                                if (activeBank == 0) {
+                                if (activeBank == 0)
+                                {
                                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] | 4);
                                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] & 127);
-                                } else {
+                                }
+                                else
+                                {
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                                 }
@@ -564,18 +787,27 @@ public class PicCPU {
                         }
                     }
                 }
-            } else { // Ich bin auf WDT, daher TMR0 sofort erhöhen
+            }
+            else
+            { // Ich bin auf WDT, daher TMR0 sofort erhöhen
                 prescaler++;
-                if ((Get_AInt() != (Aflanke == true)) && (Get_AInt() != Get_T0SE())) { // Flanke war da und gültige Flanke war da
-                    if ((Get_GIE()) && (Get_T0IE())) { // Ich darf starten
-                        if (prescaler >= getprescaler(true)) { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
+                if ((Get_AInt() != (Aflanke == true)) && (Get_AInt() != Get_T0SE()))
+                { // Flanke war da und gültige Flanke war da
+                    if ((Get_GIE()) && (Get_T0IE()))
+                    { // Ich darf starten
+                        if (prescaler >= getprescaler(true))
+                        { // Ich darf TMR0 erhöhen, da der prescaler einen überlauf hatte
                             this.memoryBank0[TMR0]++;
-                            if (this.memoryBank0[TMR0] >= 256) { // TMR0 hat Überlauf -> Interrupt
+                            if (this.memoryBank0[TMR0] >= 256)
+                            { // TMR0 hat Überlauf -> Interrupt
                                 this.memoryBank0[TMR0] = 0;
-                                if (activeBank == 0) {
+                                if (activeBank == 0)
+                                {
                                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] | 4);
                                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] & 127);
-                                } else {
+                                }
+                                else
+                                {
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                                 }
@@ -592,11 +824,13 @@ public class PicCPU {
                         }
                     }
                 }
-                if (prescaler >= getprescaler(false)) { // Wenn prescaler überlauf hat, dann WDT erhöhen
+                if (prescaler >= getprescaler(false))
+                { // Wenn prescaler überlauf hat, dann WDT erhöhen
                     WDT++;
                     prescaler =
                             0;
-                    if (WDT >= 256) { // WDT hat Überlauf -> Reset
+                    if (WDT >= 256)
+                    { // WDT hat Überlauf -> Reset
                         Reset_WDT();
                     }
 
@@ -606,12 +840,17 @@ public class PicCPU {
         }
 
 //externer Interrupt
-        if ((Get_GIE()) && (Get_INTE())) { // Ich darf starten
-            if ((Get_BInt() != (Bflanke == true)) && (Get_BInt() == Get_INTEDG())) { // Flanke da und gültige Flanke war da -> Interrupt
-                if (activeBank == 0) {
+        if ((Get_GIE()) && (Get_INTE()))
+        { // Ich darf starten
+            if ((Get_BInt() != (Bflanke == true)) && (Get_BInt() == Get_INTEDG()))
+            { // Flanke da und gültige Flanke war da -> Interrupt
+                if (activeBank == 0)
+                {
                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] | 4);
                     this.memoryBank0[INTCON] = (this.memoryBank0[INTCON] & 127);
-                } else {
+                }
+                else
+                {
                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] | 4);
                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                 }
@@ -634,33 +873,42 @@ public class PicCPU {
     /**Erhöht register f um eins
      * @param f Register Adresse
      */
-    public void INCF(int f) {
+    public void INCF(int f)
+    {
         f = getIndirectAdress(f);
 
-        int value;
+        int result;
 
-        if (activeBank == 0) {
-            memoryBank0[f] = memoryBank0[f] + 1;
-            value =
-                    memoryBank0[f];
-        } else {
-            memoryBank1[f] = memoryBank1[f] + 1;
-            value =
-                    memoryBank1[f];
+        if (activeBank == 0)
+        {
+            result = memoryBank0[f] + 1;
+            result = latch(f, result);
+            memoryBank0[f] = result;
+        }
+        else
+        {
+            result =  memoryBank1[f] + 1;
+            result = latch(f, result);
+            memoryBank1[f] = result;
         }
 
-        affectsBothBanks(f, value);
+        affectsBothBanks(f, result);
     }
 
     /** Akku in ein Register schreiben
      * @param f Register Adresse
      */
-    public void MOVWF(int f) {
+    public void MOVWF(int f)
+    {
         f = getIndirectAdress(f);
         int value = this.akku;
-        if (activeBank == 0) {
+        if (activeBank == 0)
+        {
+            value = latch(f, value);
             memoryBank0[f] = value;
-        } else {
+        }
+        else
+        {
             memoryBank1[f] = value;
         }
 
@@ -669,75 +917,102 @@ public class PicCPU {
 
     /** Akku auf null setzen
      */
-    public void CLRW() {
+    public void CLRW()
+    {
         this.akku = 0;
         changeStatusReg(zFlag, 1);
     }
 
-    public void ANDLW(int l) {
+    public void ANDLW(int l)
+    {
         this.akku = this.akku & l;
-        if (this.akku == 0) {
+        if (this.akku == 0)
+        {
             changeStatusReg(zFlag, 1);
-        } else {
+        }
+        else
+        {
             changeStatusReg(zFlag, 0);
         }
 
     }
 
-    public void ADDWF(int f, int d) {
+    public void ADDWF(int f, int d)
+    {
         f = getIndirectAdress(f);
-        if (activeBank == 0) {
+        if (activeBank == 0)
+        {
             int result = this.akku + this.memoryBank0[f];
-            if (d == 0) {
-                if (result > 255) {
+            if (d == 0)
+            {
+                if (result > 255)
+                {
                     checkFlags(result);
                     result -=
                             255;
                     this.akku = result;
 
-                } else {
+                }
+                else
+                {
                     checkFlags(result);
                     this.akku = result;
                 }
 
-            } else {
-                if (result > 255) {
+            }
+            else
+            {
+                if (result > 255)
+                {
                     checkFlags(result);
                     result -=
                             255;
-                    this.memoryBank0[f] = result;
+                    result = latch(f, result);this.memoryBank0[f] = result;
                     affectsBothBanks(f, result);
 
-                } else {
+                }
+                else
+                {
                     checkFlags(result);
-                    this.memoryBank0[f] = result;
+                    result = latch(f, result);this.memoryBank0[f] = result;
                     affectsBothBanks(f, result);
                 }
 
             }
-        } else {
+        }
+        else
+        {
             int result = this.akku + this.memoryBank1[f];
-            if (d == 0) {
-                if (result > 255) {
+            if (d == 0)
+            {
+                if (result > 255)
+                {
                     checkFlags(result);
                     result -=
                             255;
                     this.akku = result;
 
-                } else {
+                }
+                else
+                {
                     checkFlags(result);
                     this.akku = result;
                 }
 
-            } else {
-                if (result > 255) {
+            }
+            else
+            {
+                if (result > 255)
+                {
                     checkFlags(result);
                     result -=
                             255;
                     this.memoryBank1[f] = result;
                     affectsBothBanks(f, result);
 
-                } else {
+                }
+                else
+                {
                     checkFlags(result);
                     this.memoryBank1[f] = result;
                     affectsBothBanks(f, result);
@@ -748,38 +1023,52 @@ public class PicCPU {
 
     }
 
-    public void ANDWF(int f, int d) {
+    public void ANDWF(int f, int d)
+    {
         f = getIndirectAdress(f);
-        if (activeBank == 0) {
+        if (activeBank == 0)
+        {
             int result = this.akku & this.memoryBank0[f];
-            if (d == 0) {
+            if (d == 0)
+            {
                 checkFlags(result);
                 this.akku = result;
-            } else {
+            }
+            else
+            {
                 checkFlags(result);
-                this.memoryBank0[f] = result;
+                result = latch(f, result);this.memoryBank0[f] = result;
                 affectsBothBanks(f, result);
             }
 
-        } else {
+        }
+        else
+        {
             int result = this.akku & this.memoryBank0[f];
-            if (d == 0) {
+            if (d == 0)
+            {
                 checkFlags(result);
                 this.akku = result;
-            } else {
+            }
+            else
+            {
                 checkFlags(result);
-                this.memoryBank0[f] = result;
+                result = latch(f, result);this.memoryBank0[f] = result;
                 affectsBothBanks(f, result);
             }
 
         }
     }
 
-    public void CLRF(int f) {
+    public void CLRF(int f)
+    {
         f = getIndirectAdress(f);
-        if (activeBank == 0) {
+        if (activeBank == 0)
+        {
             this.memoryBank0[f] = 0;
-        } else {
+        }
+        else
+        {
             this.memoryBank1[f] = 0;
         }
 
@@ -787,32 +1076,40 @@ public class PicCPU {
         changeStatusReg(zFlag, 1);
     }
 
-    public void ADDLW(int l) {
+    public void ADDLW(int l)
+    {
         int result = this.akku + l;
 
-        if (result > 255) {
+        if (result > 255)
+        {
             checkFlags(result);
             result -=
                     255;
             this.akku = result;
 
-        } else {
+        }
+        else
+        {
             checkFlags(result);
             this.akku = result;
         }
 
     }
 
-    public void COMF(int f, int d) {
+    public void COMF(int f, int d)
+    {
         f = getIndirectAdress(f);
         int result;
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             //result = ~this.memoryBank0[f];
             result = this.memoryBank0[f] ^ 255;
             e("\nIch will das Komplement von " + this.memoryBank0[f]);
             e("\n und das ist angeblich " + result + "\n");
 
-        } else { // Bsp: 240 (11110000) = 15 (00001111)  240-255 = -15, deswegen 
+        }
+        else
+        { // Bsp: 240 (11110000) = 15 (00001111)  240-255 = -15, deswegen 
             //  vorzeichen umdrehen
             result = this.memoryBank1[f] ^ 255;
 
@@ -821,17 +1118,23 @@ public class PicCPU {
 
         }
 
-        if (d == 0) {
+        if (d == 0)
+        {
             checkFlags(result);
             this.akku = result;
 
             e("\n Ich schiebe in den Akku " + result + "\n");
 
-        } else {
+        }
+        else
+        {
             checkFlags(result);
-            if (this.activeBank == 0) {
-                this.memoryBank0[f] = result;
-            } else {
+            if (this.activeBank == 0)
+            {
+                result = latch(f, result);this.memoryBank0[f] = result;
+            }
+            else
+            {
                 this.memoryBank1[f] = result;
             }
 
@@ -840,105 +1143,150 @@ public class PicCPU {
 
     }
 
-    public void DECF(int f, int d) {
+    public void DECF(int f, int d)
+    {
         f = getIndirectAdress(f);
         int result;
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             result = this.memoryBank0[f] - 1;
 
-            if (d == 0) {
+            if (d == 0)
+            {
                 this.akku = result;
-            } else {
-                this.memoryBank0[f] = result;
+            }
+            else
+            {
+                result = latch(f, result);this.memoryBank0[f] = result;
                 affectsBothBanks(f, result);
             }
 
-        } else {
+        }
+        else
+        {
             result = this.memoryBank1[f] - 1;
 
-            if (d == 0) {
+            if (d == 0)
+            {
                 this.akku = result;
-            } else {
+            }
+            else
+            {
                 this.memoryBank1[f] = result;
                 affectsBothBanks(f, result);
             }
 
         }
-        if (result == 0) {
+        if (result == 0)
+        {
             changeStatusReg(zFlag, 1);
-        } else {
+        }
+        else
+        {
             changeStatusReg(zFlag, 0);
         }
 
     }
 
-    public boolean DECFSZ(int f, int d) {
+    public boolean DECFSZ(int f, int d)
+    {
         f = getIndirectAdress(f);
         int result;
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             result = this.memoryBank0[f] - 1;
-            if (d != 0) {
-                this.memoryBank0[f] = result;
+            if (d != 0)
+            {
+                result = latch(f, result);this.memoryBank0[f] = result;
                 affectsBothBanks(f, result);
-            } else {
+            }
+            else
+            {
                 this.akku = result;
             }
 
-            if (result == 0) {
+            if (result == 0)
+            {
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
 
-        } else {
+        }
+        else
+        {
             result = this.memoryBank1[f] - 1;
 
-            if (d != 0) {
+            if (d != 0)
+            {
                 this.memoryBank1[f] = result;
                 affectsBothBanks(f, result);
-            } else {
+            }
+            else
+            {
                 this.akku = result;
             }
 
-            if (result == 0) {
+            if (result == 0)
+            {
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
 
         }
     }
 
-    public boolean INCFSZ(int f, int d) {
+    public boolean INCFSZ(int f, int d)
+    {
         f = getIndirectAdress(f);
         int[] currentBank;
 
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             currentBank = memoryBank0;
-        } else {
+        }
+        else
+        {
             currentBank = memoryBank1;
         }
 
         int result = currentBank[f] + 1;
-        if (d != 0) {
+        if (d != 0)
+        {
             currentBank[f] = result;
             affectsBothBanks(f, result);
-        } else {
+        }
+        else
+        {
             this.akku = result;
         }
 
-        if (result == 0) {
-            if (this.activeBank == 0) {
+        if (result == 0)
+        {
+            if (this.activeBank == 0)
+            {
                 memoryBank0 = currentBank;
-            } else {
+            }
+            else
+            {
                 memoryBank1 = currentBank;
             }
 
             return true;
-        } else {
-            if (this.activeBank == 0) {
+        }
+        else
+        {
+            if (this.activeBank == 0)
+            {
                 memoryBank0 = currentBank;
-            } else {
+            }
+            else
+            {
                 memoryBank1 = currentBank;
             }
 
@@ -947,77 +1295,106 @@ public class PicCPU {
 
     }
 
-    public void IORWF(int f, int d) {
+    public void IORWF(int f, int d)
+    {
         f = getIndirectAdress(f);
         int result;
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             result = this.memoryBank0[f] | 255;
-            if (d == 0) {
+            if (d == 0)
+            {
                 this.akku = result;
-            } else {
-                this.memoryBank0[f] = result;
+            }
+            else
+            {
+                result = latch(f, result);this.memoryBank0[f] = result;
                 affectsBothBanks(f, result);
             }
 
-        } else {
+        }
+        else
+        {
             result = this.memoryBank1[f] | 255;
-            if (d == 0) {
+            if (d == 0)
+            {
                 this.akku = result;
-            } else {
+            }
+            else
+            {
                 this.memoryBank1[f] = result;
                 affectsBothBanks(f, result);
             }
 
         }
 
-        if (result == 0) {
+        if (result == 0)
+        {
             changeStatusReg(zFlag, 1);
-        } else {
+        }
+        else
+        {
             changeStatusReg(zFlag, 0);
         }
 
     }
 
-    public void MOVLW(int l) {
+    public void MOVLW(int l)
+    {
         this.akku = l;
     }
 
-    public void IORLW(int l) {
+    public void IORLW(int l)
+    {
         int result = l | 255;
         this.akku = result;
 
-        if (result == 0) {
+        if (result == 0)
+        {
             changeStatusReg(zFlag, 1);
-        } else {
+        }
+        else
+        {
             changeStatusReg(zFlag, 0);
         }
 
     }
 
-    public void XORLW(int l) {
+    public void XORLW(int l)
+    {
         this.akku = this.akku | l;
-        if (this.akku == 0) {
+        if (this.akku == 0)
+        {
             changeStatusReg(zFlag, 1);
-        } else {
+        }
+        else
+        {
             changeStatusReg(zFlag, 0);
         }
 
     }
 
-    public void SUBLW(int l) {
+    public void SUBLW(int l)
+    {
         int result = this.akku - l;
 
-        if (this.akku < l) { // Wenn als ERG was negatives rauskommt
+        if (this.akku < l)
+        { // Wenn als ERG was negatives rauskommt
             changeStatusReg(cFlag, l);
             //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
             changeStatusReg(zFlag, 0);
             this.akku = result;
 
-        } else {
+        }
+        else
+        {
             changeStatusReg(cFlag, 0);
-            if (result == 0) {
+            if (result == 0)
+            {
                 changeStatusReg(zFlag, 1);
-            } else {
+            }
+            else
+            {
                 changeStatusReg(zFlag, 0);
             }
 
@@ -1026,12 +1403,14 @@ public class PicCPU {
 
     }
 
-    public void BCF(int f, int b) {
+    public void BCF(int f, int b)
+    {
         f = getIndirectAdress(f);
         int mask;
 
         //Bitmaske aus der Zahl b erzeugen
-        switch (b) {
+        switch (b)
+        {
             case 0:
                 mask = 1;
                 break;
@@ -1061,15 +1440,20 @@ public class PicCPU {
                 return;
         }
 
-        if (this.activeBank == 0) {
-            if (((memoryBank0[f] & mask) > 0)) {
+        if (this.activeBank == 0)
+        {
+            if (((memoryBank0[f] & mask) > 0))
+            {
                 //je nachdem welche Bank aktiv ist
                 int result = memoryBank0[f] ^ mask;
                 memoryBank0[f] = result;
                 affectsBothBanks(f, result);
             }//Xor mit bitmaske
-        } else {
-            if (((memoryBank1[f] & mask) > 0)) {
+        }
+        else
+        {
+            if (((memoryBank1[f] & mask) > 0))
+            {
                 //je nachdem welche Bank aktiv ist
                 int result = memoryBank1[f] ^ mask;
                 memoryBank1[f] = result;
@@ -1077,18 +1461,21 @@ public class PicCPU {
             }//Xor mit bitmaske
         }
 
-        if (f == 3) {
+        if (f == 3)
+        {
             statusReg[b] = 0;
         }
 
     }
 
-    public void BSF(int f, int b) {
+    public void BSF(int f, int b)
+    {
         f = getIndirectAdress(f);
         int mask;
 
         //Bitmaske aus der Zahl b erzeugen
-        switch (b) {
+        switch (b)
+        {
             case 0:
                 mask = 1;
                 break;
@@ -1118,65 +1505,93 @@ public class PicCPU {
                 return;
         }
 
-        if (this.activeBank == 0) {
-            if (!((memoryBank0[f] & mask) > 0)) {
+        if (this.activeBank == 0)
+        {
+            if (!((memoryBank0[f] & mask) > 0))
+            {
                 //je nachdem welche Bank aktiv ist
                 int result = memoryBank0[f] ^ mask;
                 memoryBank0[f] = result;
                 affectsBothBanks(f, result);
             }//Xor mit bitmaske
-        } else {
-            if (!((memoryBank1[f] & mask) > 0)) {
+        }
+        else
+        {
+            if (!((memoryBank1[f] & mask) > 0))
+            {
                 //je nachdem welche Bank aktiv ist
                 int result = memoryBank1[f] ^ mask;
                 memoryBank1[f] = result;
                 affectsBothBanks(f, result);
             }//Xor mit bitmaske
         }
-        if (f == status) {
+        if (f == status)
+        {
             statusReg[b] = 1;
         }
 
     }
 
-    public void MOVF(int f, int d) {
+    public void MOVF(int f, int d)
+    {
         f = getIndirectAdress(f);
-        if (this.activeBank == 0) {
-            if (d == 0) {
+        if (this.activeBank == 0)
+        {
+            if (d == 0)
+            {
                 this.akku = memoryBank0[f];
-                if (this.akku == 0) {
+                if (this.akku == 0)
+                {
                     this.statusReg[zFlag] = 1;
-                } else {
-                    this.statusReg[zFlag] = 0;
                 }
-
-            } else {
-//                int swap = memoryBank0[f];
-//                memoryBank0[f] = 0;
-//                memoryBank0[f] = swap;
-                if (memoryBank0[f] == 0) {
-                    this.statusReg[zFlag] = 1;
-                } else {
+                else
+                {
                     this.statusReg[zFlag] = 0;
                 }
 
             }
-        } else {
-            if (d == 0) {
-                this.akku = memoryBank1[f];
-                if (this.akku == 0) {
+            else
+            {
+//                int swap = memoryBank0[f];
+//                memoryBank0[f] = 0;
+//                memoryBank0[f] = swap;
+                if (memoryBank0[f] == 0)
+                {
                     this.statusReg[zFlag] = 1;
-                } else {
+                }
+                else
+                {
                     this.statusReg[zFlag] = 0;
                 }
 
-            } else {
+            }
+        }
+        else
+        {
+            if (d == 0)
+            {
+                this.akku = memoryBank1[f];
+                if (this.akku == 0)
+                {
+                    this.statusReg[zFlag] = 1;
+                }
+                else
+                {
+                    this.statusReg[zFlag] = 0;
+                }
+
+            }
+            else
+            {
 //                int swap = memoryBank1[f];
 //                memoryBank1[f] = 0;
 //                memoryBank1[f] = swap;
-                if (memoryBank1[f] == 0) {
+                if (memoryBank1[f] == 0)
+                {
                     this.statusReg[zFlag] = 1;
-                } else {
+                }
+                else
+                {
                     this.statusReg[zFlag] = 0;
                 }
 
@@ -1184,43 +1599,55 @@ public class PicCPU {
         }
     }
 
-    public void NOP() {
+    public void NOP()
+    {
     //TODO:
     // Cycel ++;
     }
 
-    public void RRF(int f, int d) {
+    public void RRF(int f, int d)
+    {
         f = getIndirectAdress(f);
         int result;
         int oldLsb;
         int carry = statusReg[cFlag];
 
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             //LSB herausfiltern (0 oder 1 ? )
             oldLsb = memoryBank0[f] & 1;
             //Um 1 Bit nach rechts verschieben
             result =
                     memoryBank0[f] >>> 1;
-        } else {
+        }
+        else
+        {
             oldLsb = memoryBank1[f] & 1;
             result =
                     memoryBank1[f] >>> 1;
         }
 //MSB nach >>> ist immer 0
 //Wenn im Carry ne 1 ist MSB auf 1 setzen (+128)
-        if (carry != 0) {
+        if (carry != 0)
+        {
             result += 128;
         }
 
         carry = oldLsb; //imm Carry steht jetzt das alte LSB
         statusReg[cFlag] = carry;
 
-        if (d == 0) {
+        if (d == 0)
+        {
             this.akku = result;
-        } else {
-            if (this.activeBank == 0) {
-                this.memoryBank0[f] = result;
-            } else {
+        }
+        else
+        {
+            if (this.activeBank == 0)
+            {
+                result = latch(f, result);this.memoryBank0[f] = result;
+            }
+            else
+            {
                 this.memoryBank1[f] = result;
             }
 
@@ -1229,43 +1656,55 @@ public class PicCPU {
 
     }
 
-    public void RLF(int f, int d) {
+    public void RLF(int f, int d)
+    {
         f = getIndirectAdress(f);
         int result;
         int oldMsb;
         int carry = statusReg[cFlag];
 
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             //LSB herausfiltern (0 oder 1 ? )
             oldMsb = memoryBank0[f] & 128;
             //Um 1 Bit nach links verschieben
             result =
                     memoryBank0[f] << 1;
-        } else {
+        }
+        else
+        {
             oldMsb = memoryBank1[f] & 128;
             result =
                     memoryBank1[f] << 1;
         }
 
-        if (oldMsb == 128) {
+        if (oldMsb == 128)
+        {
             oldMsb = 1;
         }
 
 //LSB nach << ist immer 0
 //Wenn im Carry ne 1 ist MSB auf 1 setzen (+1)
-        if (carry != 0) {
+        if (carry != 0)
+        {
             result += 1;
         }
 
         carry = oldMsb; //imm Carry steht jetzt das alte LSB
         statusReg[cFlag] = carry;
 
-        if (d == 0) {
+        if (d == 0)
+        {
             this.akku = result;
-        } else {
-            if (this.activeBank == 0) {
-                this.memoryBank0[f] = result;
-            } else {
+        }
+        else
+        {
+            if (this.activeBank == 0)
+            {
+                result = latch(f, result);this.memoryBank0[f] = result;
+            }
+            else
+            {
                 this.memoryBank1[f] = result;
             }
 
@@ -1274,20 +1713,25 @@ public class PicCPU {
 
     }
 
-    public void SWAPF(int f, int d) {
+    public void SWAPF(int f, int d)
+    {
         f = getIndirectAdress(f);
         //aus zb 1101 0101 (D5) wird:
         String number;
         int result = -1;
 
-        if (activeBank == 0) {
+        if (activeBank == 0)
+        {
             number = Long.toHexString(memoryBank0[f]);
-        } else {
+        }
+        else
+        {
             number = Long.toHexString(memoryBank1[f]);
         }
 
 
-        if (number.length() == 2) {
+        if (number.length() == 2)
+        {
             char[] digits = number.toCharArray();
             char swap = digits[0];
             digits[0] = digits[1];
@@ -1297,40 +1741,57 @@ public class PicCPU {
             result =
                     Integer.parseInt(swapped, 16);
 
-        } else if (number.length() == 1) {
+        }
+        else if (number.length() == 1)
+        {
             String swapped = number + "0";
             result =
                     Integer.parseInt(swapped, 16);
         }
 
-        if (d == 0) {
+        if (d == 0)
+        {
             this.akku = result;
-        } else if (d != 0 && activeBank == 0) {
-            this.memoryBank0[f] = result;
-        } else if (d != 0 && activeBank == 1) {
+        }
+        else if (d != 0 && activeBank == 0)
+        {
+            result = latch(f, result);this.memoryBank0[f] = result;
+        }
+        else if (d != 0 && activeBank == 1)
+        {
             this.memoryBank1[f] = result;
         }
 
         affectsBothBanks(f, result);
     }
 
-    public void XORWF(int f, int d) {
+    public void XORWF(int f, int d)
+    {
         f = getIndirectAdress(f);
         int result;
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             result = this.akku ^ this.memoryBank0[f];
-            if (d == 0) {
+            if (d == 0)
+            {
                 this.akku = result;
-            } else {
-                this.memoryBank0[f] = result;
+            }
+            else
+            {
+                result = latch(f, result);this.memoryBank0[f] = result;
                 affectsBothBanks(f, result);
             }
 
-        } else {
+        }
+        else
+        {
             result = this.akku ^ this.memoryBank1[f];
-            if (d == 0) {
+            if (d == 0)
+            {
                 this.akku = result;
-            } else {
+            }
+            else
+            {
                 this.memoryBank1[f] = result;
                 affectsBothBanks(f, result);
             }
@@ -1340,18 +1801,22 @@ public class PicCPU {
         if (result == 0) //Bei XOR kann nichts negatives rauskommen!
         {
             this.statusReg[zFlag] = 1;
-        } else {
+        }
+        else
+        {
             this.statusReg[zFlag] = 0;
         }
 
     }
 
-    public boolean BTFSC(int f, int b) {
+    public boolean BTFSC(int f, int b)
+    {
         f = getIndirectAdress(f);
         int mask = 0;
 
         //Bitmaske aus der Zahl b erzeugen
-        switch (b) {
+        switch (b)
+        {
             case 0:
                 mask = 1;
                 break;
@@ -1380,36 +1845,45 @@ public class PicCPU {
                 System.err.println("Error beim Setzen des Bits!");
             }
 
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             if ((memoryBank0[f] & mask) > 0) // Wenn der Wert kleiner is als das gesuchte Bit ist es auf jeden Fall nicht gesetzt
             //Bsp.: gsuchtes Bitstelle 4 wenn 13 in f steht kann bitstelle 4(=16) nicht gesetzt sein
             {
                 // NOP();
                 return false;
-            } else {
+            }
+            else
+            {
                 return true;
             }
 
-        } else {
+        }
+        else
+        {
             if ((memoryBank1[f] & mask) > 0) // Wenn der Wert kleiner is als das gesuchte Bit ist es auf jeden Fall nicht gesetzt
             //Bsp.: gsuchtes Bitstelle 4 wenn 13 in f steht kann bitstelle 4(=16) nicht gesetzt sein
             {
                 NOP();
                 return false;
-            } else {
+            }
+            else
+            {
                 return true;
             }
 
         }
     }
 
-    public boolean BTFSS(int f, int b) {
+    public boolean BTFSS(int f, int b)
+    {
         f = getIndirectAdress(f);
 
         int mask = 0;
 
         //Bitmaske aus der Zahl b erzeugen
-        switch (b) {
+        switch (b)
+        {
             case 0:
                 mask = 1;
                 break;
@@ -1438,23 +1912,30 @@ public class PicCPU {
                 System.err.println("Error beim Setzen des Bits!");
             }
 
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
             if (((memoryBank0[f] & mask) > 0)) // Wenn der Wert kleiner is als das gesuchte Bit ist es auf jeden Fall nicht gesetzt
             //Bsp.: gsuchtes Bitstelle 4 wenn 13 in f steht kann bitstelle 4(=16) nicht gesetzt sein
             {
 
                 return true;
-            } else {
+            }
+            else
+            {
                 NOP();
                 return false;
             }
 
-        } else {
+        }
+        else
+        {
             if (((memoryBank1[f] & mask) > 0)) // Wenn der Wert kleiner is als das gesuchte Bit ist es auf jeden Fall nicht gesetzt
             //Bsp.: gsuchtes Bitstelle 4 wenn 13 in f steht kann bitstelle 4(=16) nicht gesetzt sein
             {
                 return true;
-            } else {
+            }
+            else
+            {
                 NOP();
                 return false;
             }
@@ -1462,13 +1943,15 @@ public class PicCPU {
         }
     }
 
-    public void CLRWDT() {
+    public void CLRWDT()
+    {
         WDT = 0;
         prescaler =
                 0;
     }
 
-    public int RETFIE() {
+    public int RETFIE()
+    {
         this.memoryBank0[INTCON] = this.memoryBank0[INTCON] | 128;
 
 
@@ -1478,16 +1961,19 @@ public class PicCPU {
 
     }
 
-    public void RETLW(int l) {
+    public void RETLW(int l)
+    {
         this.akku = l;
     }
 
-    public void SLEEP() {
+    public void SLEEP()
+    {
         this.WDT = 0;
         this.prescaler++;
     }
 
-    public void SUBWF(int f, int d) {
+    public void SUBWF(int f, int d)
+    {
         f = getIndirectAdress(f);
         int test = 255;
         int com = ~test + 1;
@@ -1495,93 +1981,127 @@ public class PicCPU {
         System.out.println("Komplement von " + test + " ist " + com);
         System.out.println("Komplement von " + test + " ist " + com2);
 
-        if (this.activeBank == 0) {
+        if (this.activeBank == 0)
+        {
 
             int result = this.memoryBank0[f] - this.akku;
 
             e("Ich führe aus " + this.memoryBank0[f] + " - " + this.akku + "\n");
 
-            if (d == 0) {
-                if (this.akku < this.memoryBank0[f]) { // Wenn als ERG was negatives rauskommt
+            if (d == 0)
+            {
+                if (this.akku < this.memoryBank0[f])
+                { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.akku = result;
 
-                } else {
+                }
+                else
+                {
                     changeStatusReg(cFlag, 0);
-                    if (result == 0) {
+                    if (result == 0)
+                    {
                         changeStatusReg(zFlag, 1);
-                    } else {
+                    }
+                    else
+                    {
                         changeStatusReg(zFlag, 0);
                     }
 
                     this.akku = ((-result) ^ 255) + 1;
+
                 }
 
-            } else if (d != 0) // d ist entweder 0 oder 128 bzw ja nachdem an welcher stelle das d bit steht!
+            }
+            else if (d != 0) // d ist entweder 0 oder 128 bzw ja nachdem an welcher stelle das d bit steht!
             {
-                if (this.akku < this.memoryBank0[f]) { // Wenn als ERG was negatives rauskommt
+                if (this.akku < this.memoryBank0[f])
+                { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
-                    this.memoryBank0[f] = result;
+                    result = latch(f, result);this.memoryBank0[f] = result;
                     affectsBothBanks(f, result);
 
-                } else {
+                }
+                else
+                {
                     changeStatusReg(cFlag, 0);
-                    if (result == 0) {
+                    if (result == 0)
+                    {
                         changeStatusReg(zFlag, 1);
-                    } else {
+                    }
+                    else
+                    {
                         changeStatusReg(zFlag, 0);
                     }
 
                     result = ((-result) ^ 255) + 1;
 
-                    this.memoryBank0[f] = result;
+
+                    result = latch(f, result);this.memoryBank0[f] = result;
 
                     affectsBothBanks(f, result);
                 }
 
             }
 
-        } else if (this.activeBank == 1) {
-            if (d == 0) {
+        }
+        else if (this.activeBank == 1)
+        {
+            if (d == 0)
+            {
                 int result = this.memoryBank1[f] - this.akku;
 
                 e("Ich führe aus " + this.memoryBank1[f] + " - " + this.akku + "\n");
 
-                if (this.akku < this.memoryBank1[f]) { // Wenn als ERG was negatives rauskommt
+                if (this.akku < this.memoryBank1[f])
+                { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.akku = result;
 
-                } else {
+                }
+                else
+                {
                     changeStatusReg(cFlag, 1);
-                    if (result == 0) {
+                    if (result == 0)
+                    {
                         changeStatusReg(zFlag, 1);
-                    } else {
+                    }
+                    else
+                    {
                         changeStatusReg(zFlag, 0);
                     }
 
                     this.akku = ((-result) ^ 255) + 1;
                 }
 
-            } else if (d != 0) {
+            }
+            else if (d != 0)
+            {
                 int result = this.akku - this.memoryBank1[f];
 
-                if (this.akku < this.memoryBank1[f]) { // Wenn als ERG was negatives rauskommt
+                if (this.akku < this.memoryBank1[f])
+                { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
                     //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.akku = result;
 
-                } else {
+                }
+                else
+                {
                     changeStatusReg(cFlag, 1);
-                    if (result == 0) {
+                    if (result == 0)
+                    {
                         changeStatusReg(zFlag, 1);
-                    } else {
+                    }
+                    else
+                    {
                         changeStatusReg(zFlag, 0);
                     }
 
@@ -1594,7 +2114,8 @@ public class PicCPU {
         }
     }
 
-    public Stack<Integer> getCallCount() {
+    public Stack<Integer> getCallCount()
+    {
         return CallCount;
     }
 }

@@ -70,15 +70,15 @@
                       <Component id="jScrollPane1" alignment="0" max="32767" attributes="1"/>
                       <Group type="102" alignment="0" attributes="1">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="PanelPorts" min="-2" pref="451" max="-2" attributes="1"/>
-                          <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                          <Component id="PanelPorts" min="-2" max="-2" attributes="1"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="PanelFlags" min="-2" pref="176" max="-2" attributes="1"/>
                       </Group>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jTabbedPane1" pref="228" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane1" pref="237" max="32767" attributes="0"/>
                   <Component id="ComboBoxChangeFormat" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -108,12 +108,12 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jScrollPane1" min="-2" pref="493" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="PanelFlags" max="32767" attributes="1"/>
                           <Component id="PanelPorts" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="jTabbedPane1" alignment="0" pref="761" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane1" alignment="0" pref="762" max="32767" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
@@ -177,24 +177,26 @@
                   </Group>
                   <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="RadioButtonRP0Flag2" min="-2" pref="44" max="-2" attributes="1"/>
-                          <EmptySpace pref="12" max="32767" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
-                          <Component id="RadioButtonRP0Flag1" min="-2" pref="44" max="-2" attributes="1"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="RadioButtonRP0Flag" alignment="0" min="-2" pref="44" max="-2" attributes="1"/>
-                              <Component id="RadioButtonCarryFlag" alignment="0" min="-2" max="-2" attributes="1"/>
+                      <Group type="103" alignment="0" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="RadioButtonRP0Flag1" min="-2" pref="44" max="-2" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
-                          <Component id="RadioButtonZFlag" pref="131" max="32767" attributes="1"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="RadioButtonRP0Flag" alignment="0" min="-2" pref="44" max="-2" attributes="1"/>
+                                  <Component id="RadioButtonCarryFlag" alignment="0" min="-2" max="-2" attributes="1"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="RadioButtonZFlag" pref="131" max="32767" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
@@ -228,12 +230,12 @@
                       <Component id="RadioButtonRP0Flag1" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                      <Component id="RadioButtonRP0Flag2" min="-2" max="-2" attributes="0"/>
+                      <Component id="RadioButtonRP0Flag2" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="85" max="32767" attributes="0"/>
+                  <EmptySpace pref="102" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -359,21 +361,31 @@
                                   <Component id="TextFieldPortBValue" min="-2" pref="52" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace min="192" pref="192" max="192" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="TextFieldLatchA" max="32767" attributes="1"/>
+                              <Component id="TextFieldLatchB" alignment="0" pref="52" max="32767" attributes="1"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-                          <Component id="jLabel3" pref="414" max="32767" attributes="0"/>
+                          <Component id="jLabel3" pref="374" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="LabelPortA1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="TextFieldWValue" min="-2" pref="57" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="LabelStack" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="TextFieldStack" min="-2" pref="187" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="LabelPortA1" min="-2" max="-2" attributes="0"/>
+                              <Component id="LabelStack" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="TextFieldStack" alignment="0" min="-2" pref="187" max="-2" attributes="0"/>
+                              <Component id="TextFieldWValue" alignment="0" min="-2" pref="57" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -392,9 +404,13 @@
                       <Component id="RadioButtonA3" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonA4" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="LabelPortA" min="-2" max="-2" attributes="0"/>
-                      <Component id="TextFieldPortAValue" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" alignment="1" groupAlignment="3" attributes="0">
+                          <Component id="TextFieldPortAValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="TextFieldLatchA" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
-                  <EmptySpace pref="6" max="32767" attributes="0"/>
+                  <EmptySpace pref="8" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="LabelPortB" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonB0" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -405,19 +421,23 @@
                       <Component id="RadioButtonB6" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonB7" alignment="1" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonB2" min="-2" max="-2" attributes="0"/>
-                      <Component id="TextFieldPortBValue" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="TextFieldPortBValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="TextFieldLatchB" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="LabelPortA1" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="TextFieldWValue" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="LabelStack" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="TextFieldStack" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="LabelStack" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="105" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -496,6 +516,28 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="horizontalAlignment" type="int" value="4"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="TextFieldLatchA">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="TextFieldLatchB">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel8">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Latch A"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel9">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Latch B"/>
           </Properties>
         </Component>
       </SubComponents>

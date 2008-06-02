@@ -46,7 +46,7 @@ public class InstructionInterpreter implements Runnable {
                         pic.setBank();
                         pic.fsrMemoryManagement();
                         pic.statusToMemory();
-
+                        pic.checkLatch();
                         gui.refreshGui();
 
                         if (pic.interrupt) {
