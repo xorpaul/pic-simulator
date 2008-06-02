@@ -17,7 +17,7 @@ public class PicCPU {
 
     private PICSIMGUI gui;
     private Stack<Integer> CallCount = new Stack<Integer>(); //Stack
-    public int linie = 0;
+    public int linie = 1;
     //Häufig verwendete Adressen und Bitpositionen
     public final int fsr = 4; //Adresse des FSR Registers
     public final int portA = 5; //Adresse von PortA
@@ -486,7 +486,7 @@ public class PicCPU {
                                 this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                             }
 
-                            CallStackPush(linie +1);
+                            CallStackPush(linie + 1);
 //                            this.CallCount.push(linie);
                             this.interrupt = true;
                             Laufzeit++;
@@ -511,7 +511,7 @@ public class PicCPU {
                             this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                         }
 //Stack[Stack_Counter] = Reg[PC];
-                        CallStackPush(linie +1);
+                        CallStackPush(linie + 1);
 //                        this.CallCount.push(linie);
                         this.interrupt = true;
                         Laufzeit++;
@@ -552,7 +552,7 @@ public class PicCPU {
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                                 }
 
-                                CallStackPush(linie +1);
+                                CallStackPush(linie + 1);
 //                                this.CallCount.push(linie);
                                 this.interrupt = true;
                                 Laufzeit++;
@@ -580,7 +580,7 @@ public class PicCPU {
                                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                                 }
 
-                                CallStackPush(linie +1);
+                                CallStackPush(linie + 1);
 //                                this.CallCount.push(linie);
                                 this.interrupt = true;
                                 Laufzeit++;
@@ -616,7 +616,7 @@ public class PicCPU {
                     this.memoryBank1[INTCON] = (this.memoryBank0[INTCON] & 127);
                 }
 
-                CallStackPush(linie +1);
+                CallStackPush(linie + 1);
 //                this.CallCount.push(linie);
                 this.interrupt = true;
                 Laufzeit++;
@@ -807,10 +807,13 @@ public class PicCPU {
         f = getIndirectAdress(f);
         int result;
         if (this.activeBank == 0) {
-            result = ~this.memoryBank0[f];
+            //result = ~this.memoryBank0[f];
+            result = this.memoryBank0[f] ^ 255;
+
         } else { // Bsp: 240 (11110000) = 15 (00001111)  240-255 = -15, deswegen 
             //  vorzeichen umdrehen
-            result = ~this.memoryBank1[f];
+            result = this.memoryBank1[f] ^ 255;
+
         }
 
         if (d == 0) {
@@ -1458,7 +1461,7 @@ public class PicCPU {
     }
 
     public int RETFIE() {
-            this.memoryBank0[INTCON] = this.memoryBank0[INTCON] | 128;
+        this.memoryBank0[INTCON] = this.memoryBank0[INTCON] | 128;
 
 
         return CallStackPop();

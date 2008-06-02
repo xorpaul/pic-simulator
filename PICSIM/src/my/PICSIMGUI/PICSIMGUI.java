@@ -10,7 +10,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.String;
 import java.util.Vector;
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.table.DefaultTableModel;
 
@@ -100,8 +99,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
      * Ruft unterschiedliche Funktionen die einen Teil der GUI refreshen auf.
      */
     public void refreshGui() {
-        jList1.setSelectedIndex(pic.linie);
-        jList1.ensureIndexIsVisible(pic.linie);
+
+        // e("Aktuelle Linie: " + pic.linie);
+
+        jList1.setSelectedIndex((interpret.programmCount[pic.linie] - 1));
+        jList1.ensureIndexIsVisible((interpret.programmCount[pic.linie] - 1));
 
         pic.statusToMemory();
         this.TextFieldWValue.setText(String.valueOf(pic.akku));
@@ -1103,52 +1105,55 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
             fileURL = chooser.getSelectedFile().getAbsolutePath();
         }
 
-
-
         try {
-            //jTextArea1.setText("");
-
             int c = 0;
+            int lineCount = 0;
+
+            boolean markerZeileLeer = false;
 
             String record = null;
-            int lineCount = 0;
             String[] Code;
-
-
 
             FileReader fr = new FileReader(fileURL);
             BufferedReader br = new BufferedReader(fr);
+
             //Zweiter Bufferd Reader nit dem selben file
             //benötigt um die anzahl der zeilen rauszufinden
             BufferedReader br2 = new BufferedReader(new FileReader(fileURL));
 
-            //Anzahl der Zeilen der JList rausfinden
-            while (br2.readLine() != null) {
-                lineCount++;
+            jList1.removeAll();
+
+
+            //Anzahl der Zeilen mit OpCode der JList rausfinden
+            while ((record = br2.readLine()) != null) {
+                if (!record.startsWith("    ")) {
+                    lineCount++;
+                }
             }
-            //System.err.println(lineCount);
+
+            //e("############### " + lineCount);
 
             Code = new String[lineCount];
-            record = new String();
             while ((record = br.readLine()) != null) {
-                // jTextArea1.append(record + "\n");
                 Vector<Object> vector = new Vector<Object>();
                 // alle vorhandene Elemente einfügen
                 for (int i = 0; i < jList1.getModel().getSize(); i++) {
                     vector.add(jList1.getModel().getElementAt(i));
                 }
-                Code[c] = record;
+                if (!record.startsWith("    ")) {
+                    markerZeileLeer = true;
+                    Code[c] = record;
+                    //e(record + "\n");
+                    c++;
+                }
+                //Code[c] = record;
+                //record = record.trim();
+                //e(Code[c] + "\n");
+                record = record.substring(20);
                 // den eigenen Text eingeben
                 vector.add(record + "\n");
                 jList1.setListData(vector);
-                c++;
             }
-
-            if (jList1.getComponentCount() == 0) {
-                jList1.setModel(new DefaultListModel());
-
-            }
-
             interpret = new InstructionInterpreter(Code, this, this.pic);
         } catch (IOException e) {
             // catch possible io errors from readLine()
