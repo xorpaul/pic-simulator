@@ -16,7 +16,7 @@ import java.util.Stack;
 public class PicCPU {
 
     private PICSIMGUI gui;
-    private Stack<Integer> CallCount = new Stack<Integer>(); //Stack
+    public Stack<Integer> CallCount = new Stack<Integer>(); //Stack
     public int linie = 1;
     //Häufig verwendete Adressen und Bitpositionen
     public final int fsr = 4; //Adresse des FSR Registers
@@ -64,7 +64,7 @@ public class PicCPU {
         try {
 
             this.getCallCount().push(value);
-            e(this.getCallCount().toString());
+        //e(this.getCallCount().toString());
         } catch (Exception e) {
             System.err.println("Konnte nicht auf Call Stack schreibe!\n\n" + e.fillInStackTrace());
         }
@@ -809,16 +809,24 @@ public class PicCPU {
         if (this.activeBank == 0) {
             //result = ~this.memoryBank0[f];
             result = this.memoryBank0[f] ^ 255;
+            e("\nIch will das Komplement von " + this.memoryBank0[f]);
+            e("\n und das ist angeblich " + result + "\n");
 
         } else { // Bsp: 240 (11110000) = 15 (00001111)  240-255 = -15, deswegen 
             //  vorzeichen umdrehen
             result = this.memoryBank1[f] ^ 255;
+
+            e("\n Ich will das Komplement von " + this.memoryBank1[f]);
+            e("\n und das ist angeblich " + result + "\n");
 
         }
 
         if (d == 0) {
             checkFlags(result);
             this.akku = result;
+
+            e("\n Ich schiebe in den Akku " + result + "\n");
+
         } else {
             checkFlags(result);
             if (this.activeBank == 0) {
@@ -1484,6 +1492,9 @@ public class PicCPU {
         if (this.activeBank == 0) {
 
             int result = this.memoryBank0[f] - this.akku;
+
+            e("Ich führe aus " + this.memoryBank0[f] + " - " + this.akku + "\n");
+
             if (d == 0) {
                 if (this.akku < this.memoryBank0[f]) { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
@@ -1499,7 +1510,7 @@ public class PicCPU {
                         changeStatusReg(zFlag, 0);
                     }
 
-                    this.akku = result; //eu9kK3Bv6qR8
+                    this.akku = (result ^ 255) + 1;
                 }
 
             } else if (d != 0) // d ist entweder 0 oder 128 bzw ja nachdem an welcher stelle das d bit steht!
@@ -1519,7 +1530,10 @@ public class PicCPU {
                         changeStatusReg(zFlag, 0);
                     }
 
+                    result = (result ^ 255) + 1;
+
                     this.memoryBank0[f] = result;
+
                     affectsBothBanks(f, result);
                 }
 
@@ -1528,6 +1542,8 @@ public class PicCPU {
         } else if (this.activeBank == 1) {
             if (d == 0) {
                 int result = this.memoryBank1[f] - this.akku;
+
+                e("Ich führe aus " + this.memoryBank1[f] + " - " + this.akku + "\n");
 
                 if (this.akku < this.memoryBank1[f]) { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
@@ -1543,8 +1559,7 @@ public class PicCPU {
                         changeStatusReg(zFlag, 0);
                     }
 
-                    this.memoryBank1[f] = result;
-                    affectsBothBanks(f, result);
+                    this.akku = (result ^ 255) + 1;
                 }
 
             } else if (d != 0) {
@@ -1563,6 +1578,8 @@ public class PicCPU {
                     } else {
                         changeStatusReg(zFlag, 0);
                     }
+
+                    result = (result ^ 255) + 1;
 
                     this.memoryBank1[f] = result;
                     affectsBothBanks(f, result);

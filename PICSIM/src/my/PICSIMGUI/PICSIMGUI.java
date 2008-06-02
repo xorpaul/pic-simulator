@@ -112,6 +112,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         setPortBRadios();
         setFlagRadios();
         refreshTables();
+
+        if (!pic.CallCount.toString().equalsIgnoreCase("[]")) {
+            TextFieldStack.setText(pic.CallCount.toString());
+        }
+
     }
 
     /**
@@ -592,6 +597,8 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
         TextFieldPortBValue = new javax.swing.JTextField();
         LabelPortA1 = new javax.swing.JLabel();
         TextFieldWValue = new javax.swing.JTextField();
+        LabelStack = new javax.swing.JLabel();
+        TextFieldStack = new javax.swing.JTextField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane3 = new javax.swing.JScrollPane();
         TableBank0 = new javax.swing.JTable();
@@ -718,7 +725,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                 .addGroup(PanelFlagsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
                     .addComponent(RadioButtonRP0Flag2))
-                .addContainerGap(80, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
 
         PanelPorts.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ports", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11)));
@@ -739,6 +746,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
 
         TextFieldWValue.setEditable(false);
         TextFieldWValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+
+        LabelStack.setText("Stack");
+
+        TextFieldStack.setEditable(false);
+        TextFieldStack.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
         javax.swing.GroupLayout PanelPortsLayout = new javax.swing.GroupLayout(PanelPorts);
         PanelPorts.setLayout(PanelPortsLayout);
@@ -791,7 +803,11 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                     .addGroup(PanelPortsLayout.createSequentialGroup()
                         .addComponent(LabelPortA1)
                         .addGap(18, 18, 18)
-                        .addComponent(TextFieldWValue, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(TextFieldWValue, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(PanelPortsLayout.createSequentialGroup()
+                        .addComponent(LabelStack)
+                        .addGap(18, 18, 18)
+                        .addComponent(TextFieldStack, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         PanelPortsLayout.setVerticalGroup(
@@ -807,7 +823,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                     .addComponent(RadioButtonA4)
                     .addComponent(LabelPortA)
                     .addComponent(TextFieldPortAValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
                 .addGroup(PanelPortsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(LabelPortB)
                     .addComponent(RadioButtonB0)
@@ -819,11 +835,15 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                     .addComponent(RadioButtonB7)
                     .addComponent(RadioButtonB2)
                     .addComponent(TextFieldPortBValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(PanelPortsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(12, 12, 12)
+                .addGroup(PanelPortsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(LabelPortA1)
                     .addComponent(TextFieldWValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(127, 127, 127))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(PanelPortsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(LabelStack)
+                    .addComponent(TextFieldStack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(102, 102, 102))
         );
 
         TableBank0.setModel(new javax.swing.table.DefaultTableModel(
@@ -1074,7 +1094,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(PanelFlags, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(PanelPorts, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(LabelStatus)
@@ -1275,6 +1295,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JLabel LabelPortA;
     private javax.swing.JLabel LabelPortA1;
     private javax.swing.JLabel LabelPortB;
+    private javax.swing.JLabel LabelStack;
     private javax.swing.JLabel LabelStatus;
     private javax.swing.JPanel PanelFlags;
     private javax.swing.JPanel PanelPorts;
@@ -1300,6 +1321,7 @@ public class PICSIMGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JTable TableBank1;
     private javax.swing.JTextField TextFieldPortAValue;
     private javax.swing.JTextField TextFieldPortBValue;
+    private javax.swing.JTextField TextFieldStack;
     private javax.swing.JTextField TextFieldWValue;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

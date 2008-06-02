@@ -113,7 +113,7 @@
                           <Component id="PanelPorts" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="jTabbedPane1" alignment="0" pref="756" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane1" alignment="0" pref="761" max="32767" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
@@ -233,7 +233,7 @@
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonRP0Flag2" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="80" max="32767" attributes="0"/>
+                  <EmptySpace pref="85" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -370,6 +370,11 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="TextFieldWValue" min="-2" pref="57" max="-2" attributes="0"/>
                       </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="LabelStack" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="TextFieldStack" min="-2" pref="187" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -389,7 +394,7 @@
                       <Component id="LabelPortA" min="-2" max="-2" attributes="0"/>
                       <Component id="TextFieldPortAValue" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="12" max="32767" attributes="0"/>
+                  <EmptySpace pref="6" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="LabelPortB" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonB0" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -402,12 +407,17 @@
                       <Component id="RadioButtonB2" min="-2" max="-2" attributes="0"/>
                       <Component id="TextFieldPortBValue" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="LabelPortA1" min="-2" max="-2" attributes="0"/>
-                      <Component id="TextFieldWValue" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="LabelPortA1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="TextFieldWValue" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="127" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="LabelStack" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="TextFieldStack" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -472,6 +482,17 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="TextFieldWValue">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="LabelStack">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Stack"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="TextFieldStack">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="horizontalAlignment" type="int" value="4"/>
