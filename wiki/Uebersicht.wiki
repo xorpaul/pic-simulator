@@ -24,6 +24,6 @@ In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundla
     * [http://code.google.com/p/pic-simulator/wiki/gIAPAP getIndirectAdress PAP]
     * [http://code.google.com/p/pic-simulator/wiki/BTFSCPAP BTFSC PAP]
     * [http://code.google.com/p/pic-simulator/wiki/COMFPAP COMF PAP]
-    * [http://code.google.com/p/pic-simulator/wiki/llrun PAP run-Methode der Klasse InstructionInterpreter]
+    * [http://code.google.com/p/pic-simulator/wiki/IIrun PAP run-Methode der Klasse InstructionInterpreter]
   # *Grafische-Benutzer-Oberfläche*
   # *Anhang*
