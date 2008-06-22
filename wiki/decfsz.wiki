@@ -1,0 +1,3 @@
+#summary PAP der decfsz-Methode.
+
+http://pic-simulator.googlecode.com/files/decfsz.png
