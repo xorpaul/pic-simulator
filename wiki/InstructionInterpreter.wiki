@@ -1,0 +1,20 @@
+#summary Beschreibung der Klassenattribute und -methoden.
+
+= Einleitung =
+
+ Interpretiert den eingelesenen Opcode und ruft enstsprechend die PIC-Funktionen
+ in der PicCPU Klasse auf. Realisiert als Thread. Run Methode ruft desweiteren
+ auch GUI-Refresh, GUI-Einlese Methoden und Synchroisations Methoden auf.
+ 
+ Das GUI und die Instanz des PicCPU sind dieser Klasse als Klassenatribute mitgegeben,
+ sowie ein Array, welches das eingelesen File enthält. Mittels Konstruktor wird
+ hieraus der Hex-Opcod herausgefiltert, zu Integerwerten umgewandelt und der
+ Interpreter Funktion übergeben.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
