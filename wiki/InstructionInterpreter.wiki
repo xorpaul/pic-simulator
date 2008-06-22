@@ -14,7 +14,98 @@
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+run-Methode der InstructionInterpreter-Klasse:
+
+{{{
+public void run() {
+
+        int i = 0;
+
+        if (gui.running == true) {
+            for (i = 0; i <= (input.length - 1); i++) {
+
+                if (gui.running == true) {
+
+                    pic.linie = i;
+                    int ret = translateCodeLine(i);
+                    pic.interrupt();
+
+                    if (ret != -2 && ret != -1) {
+
+                        i = ret;
+                    //e("Neuer Sprung zu: " + i);
+                    }
+
+                    if (ret == -1) {
+                        System.err.println("Error in line " + i);
+                        break;
+                    }
+                    try {
+                        //pic.setPortA(i);
+                        pic.setBank();
+                        pic.fsrMemoryManagement();
+                        pic.statusToMemory();
+                        pic.checkLatch();
+                        gui.refreshGui();
+
+                        if (pic.interrupt) {
+                            i = pic.linie;
+                            pic.interrupt = false;
+                        } //Wenn sich aufgrund von Interupts was geändert hat
+
+
+                        if (gui.interpreterSlow) {
+                            Thread.sleep(1000);
+                        } else {
+                            Thread.sleep(35);
+                        }
+
+                        gui.readGui();
+                    //Read muss nach dem sleep erfolgen, da die 
+                    //eingabe sonst überlesen wird
+                    } catch (InterruptedException ie) {
+                        System.err.println("InteruptedExeption -> " + ie.getClass());
+                    }
+                } else if (gui.running == false) {
+                    System.out.println("Thread beendet");
+                    break;
+                }
+            }
+        }
+
+        if (gui.step == true) {
+            i = pic.linie;
+
+            int ret = translateCodeLine(i);
+            pic.interrupt();
+            if (ret != -2 && ret != -1) {
+                pic.linie = ret;
+            }
+
+            if (ret == -1) {
+                System.err.println("Error in line " + i);
+            }
+            //pic.setPortA(i);
+            pic.setBank();
+            pic.fsrMemoryManagement();
+            pic.statusToMemory();
+
+            gui.refreshGui();
+
+            if (pic.interrupt) {
+                i = pic.linie;
+                pic.interrupt = false;
+            } //Wenn sich aufgrund von Interupts was geändert hat
+
+            gui.readGui();
+            //Read muss nach dem sleep erfolgen, da die 
+            //eingabe sonst überlesen wird
+
+            if (gui.step == false) {
+                e("Thread beendet");
+            }
+            pic.linie++;
+            gui.step = false;
+        }
+    }
+}}}
