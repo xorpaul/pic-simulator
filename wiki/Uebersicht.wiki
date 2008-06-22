@@ -28,3 +28,4 @@ In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundla
   # *Grafische-Benutzer-Oberfläche*
      * [http://code.google.com/p/pic-simulator/wiki/screenshotgui Screenshot der GUI]
   # *Anhang*
+     * [http://home.arcor.de/pp1986/picsim/javadoc/index.html JavaDoc]
