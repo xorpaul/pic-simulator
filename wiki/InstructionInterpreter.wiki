@@ -14,7 +14,20 @@
 
 = Details =
 
-run-Methode der InstructionInterpreter-Klasse:
+=== Klassenattribute ===
+{{{
+    public String[] input;
+    public int[] instructions;
+    public int[] programmCount; //Verknüpfung PC und OpCode
+    PICSIMGUI gui;
+    PicCPU pic;
+}}}
+
+=== PAP der run-Methode: ===
+
+http://pic-simulator.googlecode.com/files/run.png
+
+=== run-Methode der InstructionInterpreter-Klasse: ===
 
 {{{
 public void run() {
