@@ -12,8 +12,6 @@ Die hier verwendete Implementierungsprogrammiersprache ist _Java_.
 
 In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundlagen der Assembler Programmiersprache beigebracht.
 
-http://code.google.com/p/pic-simulator/wiki/PicCPU
-
 
 = Inhalt =
 
