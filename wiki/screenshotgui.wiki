@@ -1,0 +1,3 @@
+#summary Screenshot der GUI.
+
+http://pic-simulator.googlecode.com/files/gui.png
