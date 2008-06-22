@@ -1,0 +1,11 @@
+#summary Beschreibung der Klassenattribute und -methoden.
+
+= Einleitung =
+
+Soll eine Nachbildung der PIC-Hardware sein. Hier sind alle Funktionen der CPU
+hinterlegt, sowie auch Interrupt-Methoden, und etliche Hilfsmethoden zur Speicherverawaltung.
+
+Zur einfachen Arbeit sind spezielle Registeradressen als Integer-Konstanten definiert.
+Im Konstruktor wird der power-on reset status initialisiert.
+
+Besonderheit ist das Status Register. Dies liegt als eigenständiges Bit-Array vor, welches jederzeit mit dem Speicher Synchroisiert wird. Daher sollten auf das Status Register außer BCF und BSF keine anderen Funktionen angewandt werden. Desweiteren muss beachtet werden das JEDES bit im Status Register manipuliert werden kann, was nicht der PIC-Hardware entspricht.
