@@ -26,4 +26,5 @@ In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundla
     * [http://code.google.com/p/pic-simulator/wiki/COMFPAP COMF PAP]
     * [http://code.google.com/p/pic-simulator/wiki/IIrun PAP run-Methode der Klasse InstructionInterpreter]
   # *Grafische-Benutzer-Oberfläche*
+     * [http://code.google.com/p/pic-simulator/wiki/screenshotgui Screenshot der GUI]
   # *Anhang*
