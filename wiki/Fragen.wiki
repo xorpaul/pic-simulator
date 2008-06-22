@@ -16,7 +16,7 @@
     * Die Resultate können falsch sein
 
  * *Programmoberfläche und deren Handhabung.*
-
+     siehe [http://code.google.com/p/pic-simulator/wiki/screenshotgui Screenshot der GUI]
 
 ==Zusammenfassung:==
  * *Wie weit konnten die Funktionen des Bausteins per Software nachgebildet werden?*
