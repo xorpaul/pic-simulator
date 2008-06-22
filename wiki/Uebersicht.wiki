@@ -12,6 +12,12 @@ Die hier verwendete Implementierungsprogrammiersprache ist _Java_.
 
 In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundlagen der Assembler Programmiersprache beigebracht.
 
+Mit diesem Projekt soll ein PIC 16C83 Prozessor per Software simuliert werden. Als Eingabe benötigt das Programm ein bereits ausgearbeitete Assemblerprogrammdatei. 
+Der Simulator wurde in 3 Javaklassen unterteilt.
+ * PICSIMGUI stellt die grafische Benutzeroberfläche bereit
+ * InstructionInterpreter stellt die Verarbeitung der durch die Datei bereitgestellte Informationen bereit. Diese Informationen werden ausgewertet und für die Endbearbeitung an die Klasse PicCPU weitergegeben.
+ * PicCPU beinhaltet die einzelnen Assemblerbefehle (GOTO, INC, ...) und stellt die virtuelle Speicherregister und Speicherbanksimulation dar.
+
 
 = Inhalt =
 
