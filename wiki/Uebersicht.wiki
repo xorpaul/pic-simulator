@@ -12,15 +12,16 @@ Die hier verwendete Implementierungsprogrammiersprache ist _Java_.
 
 In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundlagen der Assembler Programmiersprache beigebracht.
 
+http://code.google.com/p/pic-simulator/wiki/PicCPU
 
 
 = Inhalt =
 
   # *Einleitung*
   # *Beschreibung der einzelnen Klassen*
-    * Klasse PicCPU
-    * Klasse InstructionInterpreter
-    * Klasse PICSIMGUI 
+    * [http://code.google.com/p/pic-simulator/wiki/PicCPU Klasse PicCPU]
+    * [http://code.google.com/p/pic-simulator/wiki/InstructionInterpreter Klasse InstructionInterpreter]
+    * [http://code.google.com/p/pic-simulator/wiki/PICSIMGUI Klasse PICSIMGUI] 
   # *Programmablauf*
   # *Grafische-Benutzer-Oberfläche*
   # *Anhang*
