@@ -1,0 +1,7 @@
+#summary Beantwortung der Fragen.
+
+*_Allgemeines:_*
+ * *Grundsätzliche Arbeitsweise eines Simulators.*
+asdasdadasd
+· Vor- und Nachteile einer Simulation.
+· Programmoberfläche und deren Handhabung.
