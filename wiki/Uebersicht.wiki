@@ -21,8 +21,8 @@ In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundla
     * [http://code.google.com/p/pic-simulator/wiki/InstructionInterpreter Klasse InstructionInterpreter]
     * [http://code.google.com/p/pic-simulator/wiki/PICSIMGUI Klasse PICSIMGUI] 
   # *Programmablaufpläne (PAP)*
-    * [http://pic-simulator.googlecode.com/files/image002.png getIndirectAdress PAP]
-    * [http://pic-simulator.googlecode.com/files/image004.png BTFSC PAP]
-    * [http://pic-simulator.googlecode.com/files/image006.png COMF PAP]
+    * [http://code.google.com/p/pic-simulator/wiki/gIA-PAP getIndirectAdress PAP]
+    * [http://code.google.com/p/pic-simulator/wiki/BTFSC-PAP BTFSC PAP]
+    * [http://code.google.com/p/pic-simulator/wiki/COMF-PAP COMF PAP]
   # *Grafische-Benutzer-Oberfläche*
   # *Anhang*
