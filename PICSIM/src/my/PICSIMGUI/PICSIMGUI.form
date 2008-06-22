@@ -61,10 +61,10 @@
                       <Component id="ButtonRun" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ButtonStop" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="CheckBoxSloMo" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="ButtonStep" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="CheckBoxSloMo" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                       <Component id="jScrollPane1" alignment="0" max="32767" attributes="1"/>
@@ -98,8 +98,8 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="ButtonRun" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="ButtonStop" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="CheckBoxSloMo" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="ButtonStep" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="CheckBoxSloMo" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -113,7 +113,7 @@
                           <Component id="PanelPorts" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="jTabbedPane1" alignment="0" pref="762" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane1" alignment="0" pref="765" max="32767" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
@@ -235,7 +235,7 @@
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonRP0Flag2" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="102" max="32767" attributes="0"/>
+                  <EmptySpace pref="105" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -387,6 +387,15 @@
                               <Component id="TextFieldWValue" alignment="0" min="-2" pref="57" max="-2" attributes="0"/>
                           </Group>
                       </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="LabelPortA2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="TextAreaWDT" min="-2" pref="57" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="LabelPortA3" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="TextAreaPrescaler" min="-2" pref="57" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -410,7 +419,7 @@
                           <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="8" max="32767" attributes="0"/>
+                  <EmptySpace pref="6" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="LabelPortB" min="-2" max="-2" attributes="0"/>
                       <Component id="RadioButtonB0" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -437,7 +446,14 @@
                       <Component id="TextFieldStack" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="LabelStack" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="105" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="LabelPortA2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="TextAreaWDT" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="LabelPortA3" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="TextAreaPrescaler" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -506,6 +522,9 @@
             <Property name="editable" type="boolean" value="false"/>
             <Property name="horizontalAlignment" type="int" value="4"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="TextFieldWValueActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="LabelStack">
           <Properties>
@@ -538,6 +557,28 @@
         <Component class="javax.swing.JLabel" name="jLabel9">
           <Properties>
             <Property name="text" type="java.lang.String" value="Latch B"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="LabelPortA2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="WDT"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="TextAreaWDT">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="LabelPortA3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Prescaler"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="TextAreaPrescaler">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="horizontalAlignment" type="int" value="4"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -691,7 +732,7 @@
     </Container>
     <Component class="javax.swing.JButton" name="ButtonStep">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Step-by-Step LAlalalalalaal!"/>
+        <Property name="text" type="java.lang.String" value="Step-by-Step"/>
         <Property name="toolTipText" type="java.lang.String" value="Step-by-Step Compiling"/>
       </Properties>
       <Events>

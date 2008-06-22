@@ -107,7 +107,7 @@ public class InstructionInterpreter implements Runnable {
             }
             pic.linie++;
             gui.step = false;
-        }
+        }   
     }
 
     /**

@@ -525,41 +525,6 @@ public class PicCPU {
 
     public void Reset_WDT() {
         e("Programm wird aufgrund von WDT resetet! \n");
-        /*
-        int x = 0;
-        for (x = 0; x <=
-        127; x++)
-        {
-        this.memoryBank0[x] = 0;
-        this.memoryBank1[x] = 0;
-        }                                             // Zurücksetzen des Registers
-        this.CallCount.clear();
-        // Zurücksetzen des Stacks
-        //this.akku = 0;                                                   // Zurücksetzen des W-Registers
-        //Zeit = 0;                                                   // Zurücksetzen der Laufzeit
-        // Stack_Counter = 0;                                          // Zurücksetzen des Stack-Zeigers
-        //this.memoryBank0[portA] = 31;                                             // Vorbelegung des A-Registers
-        //this.memoryBank0[portB] = 255;                                            // Vorbelegung des B-Registers
-        this.memoryBank1[trisA] = 31;                                            // Vorbelegung des A-Tris
-        this.memoryBank1[trisB] = 255;                                           // Vorbelegung des B-Tris
-        //##### 
-        this.linie = -1;                                              // PC-Counter auf -1 setzen, da er danach automatisch um 1 erhöht wird -> 0 
-        changeStatusReg(3, 1);
-        // Vorbelegung des Status-Registers
-        this.memoryBank0[fsr] = 128;                                               // Vorbelegung des Indirect-Registers
-        Aflanke =
-        false;                                                // Vorbelegung der Flanke
-        Bflanke =
-        false;                                                // Vorbelegung der Flanke
-        //  Zeit = 0;                                                   // Zeit auf 0 setzen
-        WDT =
-        0;  // WDT auf 0 setzen
-        this.interrupt = true;
-        //##
-        prescaler =
-        0;                                              // prescaler auf 0 setzen
-         */
-
         gui.HardReset();
     }
 
@@ -1567,7 +1532,7 @@ public class PicCPU {
                 System.err.println("Error beim Setzen des Bits!");
             }
 
-        e("Zu testende Zahl ist in Int: " + mask + "Stelle: " + b + "Registernummer: " + f +"\n");
+        e("Zu testende Zahl ist in Int: " + mask + "Stelle: " + b + "Registernummer: " + f + "\n");
 
         if (this.activeBank == 0) {
             if (((memoryBank0[f] & mask) > 0)) // Wenn der Wert kleiner is als das gesuchte Bit ist es auf jeden Fall nicht gesetzt
@@ -1630,7 +1595,6 @@ public class PicCPU {
             if (d == 0) {
                 if (this.akku < this.memoryBank0[f]) { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
-                    //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     this.akku = result;
 
@@ -1650,7 +1614,6 @@ public class PicCPU {
             {
                 if (this.akku < this.memoryBank0[f]) { // Wenn als ERG was negatives rauskommt
                     changeStatusReg(cFlag, 1);
-                    //result -= 255; Muss man hier was machen? Um bspw -3 darzustellen?
                     changeStatusReg(zFlag, 0);
                     result = latch(f, result);
                     this.memoryBank0[f] = result;
