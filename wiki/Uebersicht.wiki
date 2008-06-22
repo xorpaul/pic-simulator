@@ -1,0 +1,26 @@
+#summary Übersicht über die Dokumentation.
+#labels Featured,Phase-Requirements
+
+= Einleitung =
+
+*Programmable Integrated Circuit - Simulator*
+
+Dieses Projekt wird in der Vorlesung *Rechnertechnik II* im Kurs *TIT06GR1* der [http://www.ba-karlsruhe.de BA-Karlsruhe] bearbeitet.
+
+Dieses Projekt kann in einer beliebigen Hochsprache geschrieben werden.
+Die hier verwendete Implementierungsprogrammiersprache ist _Java_.
+
+In der vorherigen Vorlesung des 3. Semesters Rechnertechnik I wurden die Grundlagen der Assembler Programmiersprache beigebracht.
+
+
+
+= Inhalt =
+
+  # *Einleitung*
+  # *Beschreibung der einzelnen Klassen*
+    * Klasse PicCPU
+    * Klasse InstructionInterpreter
+    * Klasse PICSIMGUI 
+  # *Programmablauf*
+  # *Grafische-Benutzer-Oberfläche*
+  # *Anhang*
