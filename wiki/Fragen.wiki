@@ -1,7 +1,18 @@
 #summary Beantwortung der Fragen.
 
-*_Allgemeines:_*
+==Allgemeines:==
  * *Grundsätzliche Arbeitsweise eines Simulators.*
-asdasdadasd
-· Vor- und Nachteile einer Simulation.
-· Programmoberfläche und deren Handhabung.
+    Die Simulation oder Simulierung ist eine Vorgehensweise zur Analyse von Systemen, die für die theoretische oder formelmäßige Behandlung zu kompliziert sind. Dies ist überwiegend bei dynamischem Systemverhalten gegeben. Bei der Simulation werden Experimente an einem Modell durchgeführt, um Erkenntnisse über das reale System zu gewinnen. 
+    Im Zusammenhang mit Simulation spricht man von dem zu simulierenden System und von einem Simulator als Implementierung oder Realisierung eines Simulationsmodells. Letzteres stellt eine Abstraktion des zu simulierenden Systems dar (Struktur, Funktion, Verhalten). Der Ablauf des Simulators mit konkreten Werten (Parametrisation) wird als Simulationsexperiment bezeichnet. Dessen Ergebnisse können dann interpretiert und auf das zu simulierende System übertragen werden.
+
+ * *Vor- und Nachteile einer Simulation.*
+  * Vorteile:
+    * Eine Untersuchung am realen System wäre zu aufwändig, zu teuer oder zu gefährlich.
+    * Das reale System existiert (noch) nicht.
+    * Für Experimente kann ein Simulationsmodell wesentlich leichter modifiziert werden als das reale System.
+    * Spiel und Spaß an simulierten Szenarien.
+  * Nachteile:
+    * Rechenkapazität, Zeit und Geld
+    * Die Resultate können falsch sein
+
+ * *Programmoberfläche und deren Handhabung.*
